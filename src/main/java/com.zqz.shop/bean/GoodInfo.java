@@ -1,18 +1,19 @@
-package com.zqz.shop.entity;
+package com.zqz.shop.bean;
 
-import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
-import javax.servlet.annotation.HandlesTypes;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+/**
+ * @Author: ZQZ
+ * @Description:
+ * @ClassName: GoodInfo
+ * @Date: Created in 16:18 2023-8-18
+ */
 @Data
-@Table("goods")
-public class Goods {
-    public static final Boolean NOT_DELETED = false;
-
-    public static final Boolean IS_DELETED = true;
+public class GoodInfo {
 
     private Integer id;
 
@@ -24,7 +25,7 @@ public class Goods {
 
     private Integer brandId;
 
-    private String gallery;
+    private List<String> gallery;
 
     private String keywords;
 
@@ -63,5 +64,4 @@ public class Goods {
     private BigDecimal wholesalePrice;
 
     private String detail;
-
 }

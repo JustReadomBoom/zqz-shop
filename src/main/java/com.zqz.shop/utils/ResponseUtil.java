@@ -1,5 +1,7 @@
 package com.zqz.shop.utils;
 
+import com.zqz.shop.enums.ResponseCode;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,14 +39,14 @@ import java.util.Map;
  */
 public class ResponseUtil {
 	public static Object ok() {
-		Map<String, Object> obj = new HashMap<String, Object>();
+		Map<String, Object> obj = new HashMap<>(2);
 		obj.put("errno", 0);
 		obj.put("errmsg", "成功");
 		return obj;
 	}
 
 	public static Object ok(Object data) {
-		Map<String, Object> obj = new HashMap<String, Object>();
+		Map<String, Object> obj = new HashMap<>(3);
 		obj.put("errno", 0);
 		obj.put("errmsg", "成功");
 		obj.put("data", data);
@@ -52,7 +54,7 @@ public class ResponseUtil {
 	}
 
 	public static Object ok(String errmsg, Object data) {
-		Map<String, Object> obj = new HashMap<String, Object>();
+		Map<String, Object> obj = new HashMap<>(3);
 		obj.put("errno", 0);
 		obj.put("errmsg", errmsg);
 		obj.put("data", data);
@@ -60,18 +62,34 @@ public class ResponseUtil {
 	}
 
 	public static Object fail() {
-		Map<String, Object> obj = new HashMap<String, Object>();
+		Map<String, Object> obj = new HashMap<>(2);
 		obj.put("errno", -1);
 		obj.put("errmsg", "错误");
 		return obj;
 	}
 
+	public static Object fail(String msg) {
+		Map<String, Object> obj = new HashMap<>(2);
+		obj.put("errno", -1);
+		obj.put("errmsg", msg);
+		return obj;
+	}
+
 	public static Object fail(int errno, String errmsg) {
-		Map<String, Object> obj = new HashMap<String, Object>();
+		Map<String, Object> obj = new HashMap<>(2);
 		obj.put("errno", errno);
 		obj.put("errmsg", errmsg);
 		return obj;
 	}
+
+	public static Object fail(ResponseCode responseCode) {
+		Map<String, Object> obj = new HashMap<>(2);
+		obj.put("errno", responseCode.getCode());
+		obj.put("errmsg", responseCode.getDesc());
+		return obj;
+	}
+
+
 
 	public static Object badArgument() {
 		return fail(401, "参数不对");

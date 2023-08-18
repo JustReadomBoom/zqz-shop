@@ -1,11 +1,11 @@
 package com.zqz.shop.controller;
 
+import com.zqz.shop.annotation.LoginUser;
 import com.zqz.shop.service.HomeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -23,7 +23,7 @@ public class HomeController {
     private HomeService homeService;
 
     @GetMapping("/index")
-    public Object index(@RequestParam Integer userId) {
+    public Object index(@LoginUser Integer userId) {
         return homeService.doQueryIndex(userId);
     }
 
