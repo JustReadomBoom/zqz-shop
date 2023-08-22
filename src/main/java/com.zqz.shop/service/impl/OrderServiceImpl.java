@@ -1,9 +1,11 @@
 package com.zqz.shop.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.entity.Order;
 import com.zqz.shop.entity.OrderGoods;
+import com.zqz.shop.enums.ResponseCode;
 import com.zqz.shop.service.OrderService;
 import com.zqz.shop.service.business.OrderBusService;
 import com.zqz.shop.service.business.OrderGoodsBusService;
@@ -35,10 +37,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Object doQueryList(Integer userId, Integer showType, Integer page, Integer size) {
+        if (ObjectUtil.isEmpty(userId)) {
+            return ResponseUtil.unlogin();
+        }
         Map<String, Object> result = new HashMap<>(3);
         List<Short> orderStatus = OrderUtil.orderStatus(showType);
         Page<Order> orderPage = orderBusService.queryByOrderStatus(userId, orderStatus, page, size);
         List<Order> orderRecords = orderPage.getRecords();
+        if (CollectionUtil.isEmpty(orderRecords)) {
+            return ResponseUtil.ok();
+        }
         long totalRow = orderPage.getTotalRow();
         long totalPage = orderPage.getTotalPage();
         if (CollectionUtil.isNotEmpty(orderRecords)) {

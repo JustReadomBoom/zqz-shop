@@ -31,7 +31,7 @@ public class Cart {
 
     private Short number;
 
-    private String[] specifications;
+    private String specifications;
 
     private Boolean checked;
 

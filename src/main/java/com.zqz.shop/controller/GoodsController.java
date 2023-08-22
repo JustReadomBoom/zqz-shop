@@ -1,5 +1,6 @@
 package com.zqz.shop.controller;
 
+import com.zqz.shop.annotation.LoginUser;
 import com.zqz.shop.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,8 +45,8 @@ public class GoodsController {
 
 
     @GetMapping("/detail")
-    public Object queryDetail(@RequestParam("id") Integer id) {
-        return goodsService.doQueryDetail(id);
+    public Object queryDetail(@LoginUser Integer userId, @RequestParam("id") Integer id) {
+        return goodsService.doQueryDetail(id, userId);
     }
 
 }

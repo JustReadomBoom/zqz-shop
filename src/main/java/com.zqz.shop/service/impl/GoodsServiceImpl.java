@@ -7,6 +7,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.bean.GoodInfo;
+import com.zqz.shop.bean.GoodsProductVo;
 import com.zqz.shop.bean.GoodsSpecificationVo;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.entity.Goods;
@@ -81,6 +82,10 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public Object doQueryListPage(Integer categoryId, String keyword, Boolean isNew, Boolean isHot, Integer page, Integer size) {
         Page<Goods> goodsPage = goodsBusService.queryByParam(categoryId, keyword, isNew, isHot, page, size);
+        List<Goods> goodsList = goodsPage.getRecords();
+        if (CollectionUtil.isEmpty(goodsList)) {
+            return ResponseUtil.ok();
+        }
         List<Integer> catIds = goodsBusService.queryCategoryIds(keyword, isNew, isHot);
         List<Category> categoryList;
         if (CollectionUtil.isNotEmpty(catIds)) {
@@ -89,7 +94,7 @@ public class GoodsServiceImpl implements GoodsService {
             categoryList = new ArrayList<>();
         }
         Map<String, Object> data = new HashMap<>(4);
-        data.put("goodsList", goodsPage.getRecords());
+        data.put("goodsList", goodsList);
         data.put("count", goodsPage.getTotalRow());
         data.put("filterCategoryList", categoryList);
         data.put("totalPages", goodsPage.getTotalPage());
@@ -97,7 +102,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public Object doQueryDetail(Integer id) {
+    public Object doQueryDetail(Integer id, Integer userId) {
         //商品信息
         Goods goodInfo = goodsBusService.queryById(id);
         GoodInfo newGoodInfo = new GoodInfo();
@@ -110,7 +115,7 @@ public class GoodsServiceImpl implements GoodsService {
         //商品规格
         List<GoodsSpecificationVo> specificationVoList = specificationBusService.queryListVoByGoodsId(id);
         //商品规格对应的数量和价格
-        List<GoodsProduct> productList = productBusService.queryListByGoodsId(id);
+        List<GoodsProductVo> productList = productBusService.queryListByGoodsId(id);
 
         Map<String, Object> data = new HashMap<>(5);
         data.put("info", newGoodInfo);

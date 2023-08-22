@@ -13,5 +13,5 @@ public interface GoodsService {
 
     Object doQueryListPage(Integer categoryId, String keyword, Boolean isNew, Boolean isHot, Integer page, Integer size);
 
-    Object doQueryDetail(Integer id);
+    Object doQueryDetail(Integer id, Integer userId);
 }
