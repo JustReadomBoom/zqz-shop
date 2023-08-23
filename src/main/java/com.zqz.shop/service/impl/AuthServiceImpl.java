@@ -2,12 +2,14 @@ package com.zqz.shop.service.impl;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.bean.BindPhoneReq;
 import com.zqz.shop.bean.UserInfo;
 import com.zqz.shop.bean.UserToken;
 import com.zqz.shop.bean.WxLoginInfo;
@@ -163,6 +165,38 @@ public class AuthServiceImpl implements AuthService {
             log.error("****** doWxLogin error:{}", e.getMessage());
             return ResponseUtil.fail(e.getMessage());
         }
+    }
+
+    @Override
+    public Object doBindPhone(Integer userId, BindPhoneReq req) {
+        if (ObjectUtil.isEmpty(userId)) {
+            return ResponseUtil.unlogin();
+        }
+        String encryptedData = req.getEncryptedData();
+        String iv = req.getIv();
+        String sessionKey = UserTokenManager.getSessionKey(userId);
+        WxMaPhoneNumberInfo phoneNoInfo;
+        try {
+            phoneNoInfo = this.wxMaService.getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
+        } catch (Exception e) {
+            log.error("绑定手机号失败:{}", e.getMessage());
+            e.printStackTrace();
+            return ResponseUtil.fail();
+        }
+        String phoneNumber = phoneNoInfo.getPhoneNumber();
+        User user = userMapper.selectOneById(userId);
+        if (ObjectUtil.isEmpty(user)) {
+            log.error("绑定手机号失败，用户:{}信息为空!", userId);
+            return ResponseUtil.dataEmpty();
+        }
+        user.setMobile(phoneNumber);
+        int update = userMapper.update(user);
+        if (update <= 0) {
+            return ResponseUtil.fail();
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("phone", phoneNumber);
+        return ResponseUtil.ok(result);
     }
 
     private List<User> queryUserByName(String userName) {

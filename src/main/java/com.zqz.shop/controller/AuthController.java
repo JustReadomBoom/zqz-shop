@@ -1,5 +1,7 @@
 package com.zqz.shop.controller;
 
+import com.zqz.shop.annotation.LoginUser;
+import com.zqz.shop.bean.BindPhoneReq;
 import com.zqz.shop.bean.WxLoginInfo;
 import com.zqz.shop.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +30,28 @@ public class AuthController {
         return authService.doLogin(body, request);
     }
 
+    /**
+     * 微信登录
+     *
+     * @param wxLoginInfo
+     * @param request
+     * @return
+     */
     @PostMapping("/login_by_weixin")
     public Object wxLogin(@RequestBody WxLoginInfo wxLoginInfo, HttpServletRequest request) {
         return authService.doWxLogin(wxLoginInfo, request);
+    }
+
+    /**
+     * 绑定手机号
+     *
+     * @param userId
+     * @param req
+     * @return
+     */
+    @PostMapping("/bindPhone")
+    public Object bindPhone(@LoginUser Integer userId, @RequestBody BindPhoneReq req) {
+        return authService.doBindPhone(userId, req);
     }
 
 }

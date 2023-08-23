@@ -1,5 +1,6 @@
 package com.zqz.shop.service;
 
+import com.zqz.shop.bean.BindPhoneReq;
 import com.zqz.shop.bean.WxLoginInfo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,4 +15,6 @@ public interface AuthService {
     Object doLogin(String body, HttpServletRequest request);
 
     Object doWxLogin(WxLoginInfo wxLoginInfo, HttpServletRequest request);
+
+    Object doBindPhone(Integer userId, BindPhoneReq req);
 }
