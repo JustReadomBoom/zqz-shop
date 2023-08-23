@@ -49,4 +49,14 @@ public class GoodsProductBusService {
     public GoodsProduct queryById(Integer id) {
         return productMapper.selectOneById(id);
     }
+
+    public int reduceStock(Integer productId, Integer goodsId, Short number) {
+        //每次需将商品的销售量加下
+        productMapper.updateSales(goodsId, number);
+        return productMapper.reduceStock(productId, number);
+    }
+
+    public int addStock(Integer productId, Short number) {
+        return productMapper.addStock(productId, number);
+    }
 }

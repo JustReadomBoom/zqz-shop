@@ -56,4 +56,25 @@ public class CartBusService {
     public int updateByParam(Integer userId, List<Integer> productIds, Boolean isChecked) {
         return cartMapper.updateByProductIds(isChecked, productIds, userId, false);
     }
+
+    public Cart queryById(Integer id) {
+        return cartMapper.selectOneById(id);
+    }
+
+    public int deleteByProductIds(Integer userId, List<Integer> productIds) {
+        return cartMapper.deleteByProductIds(userId, productIds);
+    }
+
+    public List<Cart> queryByUserIdAndChecked(Integer userId) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(CART.USER_ID.eq(userId))
+                .and(CART.CHECKED.eq(true))
+                .and(CART.DELETED.eq(false));
+        return cartMapper.selectListByQuery(wrapper);
+    }
+
+    public int clearGoods(Integer userId) {
+        return cartMapper.deleteByUserId(userId);
+    }
 }

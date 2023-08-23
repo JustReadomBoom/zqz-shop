@@ -9,7 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 维护用户token
+ * @Author: ZQZ
+ * @Description: 维护用户token
+ * @ClassName: UserTokenManager
+ * @Date: Created in 10:08 2023-8-11
  */
 public class UserTokenManager {
     private static Map<String, UserToken> tokenMap = new HashMap<>();

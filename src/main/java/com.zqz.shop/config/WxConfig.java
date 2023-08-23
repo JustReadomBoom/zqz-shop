@@ -11,6 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @Author: ZQZ
+ * @Description: 微信配置
+ * @ClassName: WxConfig
+ * @Date: Created in 10:08 2023-8-11
+ */
 @Configuration
 public class WxConfig {
 

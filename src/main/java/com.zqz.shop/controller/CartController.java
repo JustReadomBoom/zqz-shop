@@ -48,4 +48,17 @@ public class CartController {
         return cartService.doUpdate(userId, cart);
     }
 
+    @PostMapping("/delete")
+    public Object delete(@LoginUser Integer userId, @RequestBody String body) {
+        return cartService.doDelete(userId, body);
+    }
+
+
+    @GetMapping("/checkout")
+    public Object checkout(@LoginUser Integer userId, Integer cartId,
+                           Integer addressId, Integer couponId,
+                           Integer grouponRulesId){
+        return cartService.doCheckout(userId, cartId, addressId, couponId, grouponRulesId);
+    }
+
 }

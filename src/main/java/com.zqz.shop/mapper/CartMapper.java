@@ -2,6 +2,7 @@ package com.zqz.shop.mapper;
 
 import com.mybatisflex.core.BaseMapper;
 import com.zqz.shop.entity.Cart;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
@@ -29,5 +30,25 @@ public interface CartMapper extends BaseMapper<Cart> {
                            @Param("productIds") List<Integer> productIds,
                            @Param("userId") Integer userId,
                            @Param("deleted") boolean deleted);
+
+    @Delete("<script>"
+            + "delete from cart "
+            + "where product_id in "
+            + "<foreach item='id' index='index' collection='productIds' open='(' separator=',' close=')'>"
+            + "#{id}"
+            + "</foreach>"
+            + " and user_id = #{userId} "
+            + "</script>")
+    int deleteByProductIds(@Param("userId") Integer userId,
+                           @Param("productIds") List<Integer> productIds);
+
+
+    @Update("<script>"
+            + "update cart "
+            + "set deleted = true "
+            + "where user_id = #{userId} "
+            + "and checked = true"
+            + "</script>")
+    int deleteByUserId(@Param("userId") Integer userId);
 
 }

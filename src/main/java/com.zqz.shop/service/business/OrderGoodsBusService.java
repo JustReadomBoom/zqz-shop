@@ -29,4 +29,8 @@ public class OrderGoodsBusService {
                 .and(ORDER_GOODS.ORDER_ID.eq(orderId));
         return orderGoodsMapper.selectListByQuery(wrapper);
     }
+
+    public int add(OrderGoods orderGoods) {
+        return orderGoodsMapper.insertSelective(orderGoods);
+    }
 }

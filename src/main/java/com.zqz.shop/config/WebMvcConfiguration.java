@@ -7,8 +7,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+/**
+ * @Author: ZQZ
+ * @Description: WebMvc配置
+ * @ClassName: WebMvcConfiguration
+ * @Date: Created in 10:08 2023-8-11
+ */
 @Configuration
-public class WxWebMvcConfiguration implements WebMvcConfigurer {
+public class WebMvcConfiguration implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new LoginUserHandlerMethodArgumentResolver());

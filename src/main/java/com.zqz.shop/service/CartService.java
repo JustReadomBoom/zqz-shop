@@ -18,4 +18,10 @@ public interface CartService {
     Object doChecked(Integer userId, String body);
 
     Object doUpdate(Integer userId, Cart cart);
+
+    Object doDelete(Integer userId, String body);
+
+    Object doCheckout(Integer userId, Integer cartId, Integer addressId, Integer couponId, Integer grouponRulesId);
+
+
 }

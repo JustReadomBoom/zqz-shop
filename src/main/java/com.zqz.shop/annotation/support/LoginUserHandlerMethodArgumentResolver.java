@@ -9,6 +9,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+/**
+ * @Author: ZQZ
+ * @Description: 登录拦截
+ * @ClassName: LoginUserHandlerMethodArgumentResolver
+ * @Date: Created in 10:08 2023-8-11
+ */
 @Slf4j
 public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 	public static final String LOGIN_TOKEN_KEY = "X-Dts-Token";

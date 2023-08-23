@@ -1,5 +1,6 @@
 package com.zqz.shop.service.business;
 
+import com.zqz.shop.entity.User;
 import com.zqz.shop.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ public class UserBusService {
     @Resource
     private UserMapper userMapper;
 
+    public User queryById(Integer userId) {
+        return userMapper.selectOneById(userId);
+    }
 
 
 }

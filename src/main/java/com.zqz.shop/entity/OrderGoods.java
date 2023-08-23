@@ -31,7 +31,7 @@ public class OrderGoods {
 
     private BigDecimal price;
 
-    private String[] specifications;
+    private String specifications;
 
     private String picUrl;
 
