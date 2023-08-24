@@ -2,7 +2,6 @@ package com.zqz.shop.service.impl;
 
 import com.zqz.shop.service.UserService;
 import com.zqz.shop.service.business.OrderBusService;
-import com.zqz.shop.service.business.UserBusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserBusService userBusService;
     @Autowired
     private OrderBusService orderBusService;
 

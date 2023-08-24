@@ -1,10 +1,14 @@
 package com.zqz.shop.controller;
 
 import com.zqz.shop.annotation.LoginUser;
+import com.zqz.shop.bean.AddCartProductReq;
+import com.zqz.shop.bean.UpdateCartReq;
 import com.zqz.shop.entity.Cart;
 import com.zqz.shop.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * @Author: ZQZ
@@ -26,8 +30,8 @@ public class CartController {
 
 
     @PostMapping("/add")
-    public Object addProduct(@LoginUser Integer userId, @RequestBody Cart cart) {
-        return cartService.doAddProduct(userId, cart);
+    public Object addProduct(@LoginUser Integer userId, @RequestBody @Valid AddCartProductReq req) {
+        return cartService.doAddProduct(userId, req);
     }
 
 
@@ -44,8 +48,8 @@ public class CartController {
 
 
     @PostMapping("/update")
-    public Object update(@LoginUser Integer userId, @RequestBody Cart cart) {
-        return cartService.doUpdate(userId, cart);
+    public Object update(@LoginUser Integer userId, @RequestBody @Valid UpdateCartReq req) {
+        return cartService.doUpdate(userId, req);
     }
 
     @PostMapping("/delete")

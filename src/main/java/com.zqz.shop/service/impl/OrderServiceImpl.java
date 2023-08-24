@@ -12,6 +12,7 @@ import com.zqz.shop.bean.*;
 import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.*;
 import com.zqz.shop.enums.ResponseCode;
+import com.zqz.shop.exception.ShopException;
 import com.zqz.shop.service.OrderService;
 import com.zqz.shop.service.business.*;
 import com.zqz.shop.system.SystemConfig;
@@ -257,10 +258,10 @@ public class OrderServiceImpl implements OrderService {
 
             int remainNumber = product.getNumber() - checkGoods.getNumber();
             if (remainNumber < 0) {
-                throw new RuntimeException("下单的商品货品数量大于库存量!");
+                throw new ShopException("下单的商品货品数量大于库存量!");
             }
             if (goodsProductBusService.reduceStock(productId, checkGoods.getGoodsId(), checkGoods.getNumber()) == 0) {
-                throw new RuntimeException("商品货品库存减少失败!");
+                throw new ShopException("商品货品库存减少失败!");
             }
         }
         data.put("orderId", orderId);
@@ -293,7 +294,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(OrderUtil.STATUS_CANCEL);
         order.setEndTime(new Date());
         if (orderBusService.updateOrder(order) == 0) {
-            throw new RuntimeException("取消订单失败，更新订单信息异常!");
+            throw new ShopException("取消订单失败，更新订单信息异常!");
         }
 
         // 商品货品数量增加
@@ -302,7 +303,7 @@ public class OrderServiceImpl implements OrderService {
             Integer productId = orderGoods.getProductId();
             Short number = orderGoods.getNumber();
             if (goodsProductBusService.addStock(productId, number) == 0) {
-                throw new RuntimeException("商品货品库存增加失败!");
+                throw new ShopException("商品货品库存增加失败!");
             }
         }
         return ResponseUtil.ok();
@@ -378,7 +379,6 @@ public class OrderServiceImpl implements OrderService {
             userFormid.setAddTime(new Date());
             userFormid.setExpireTime(DateUtil.offsetDay(new Date(), +7).toJdkDate());
             userFormidBusService.add(userFormid);
-
         } catch (Exception e) {
             log.error("预支付失败：{}", e.getMessage());
             e.printStackTrace();

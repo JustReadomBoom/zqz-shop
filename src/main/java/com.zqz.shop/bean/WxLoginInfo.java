@@ -2,6 +2,8 @@ package com.zqz.shop.bean;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -14,8 +16,10 @@ import java.io.Serializable;
 public class WxLoginInfo implements Serializable {
     private static final long serialVersionUID = -7594026848277312139L;
 
+    @NotBlank(message = "code不能为空!")
     private String code;
 
+    @NotNull(message = "userInfo不能为空!")
     private UserInfo userInfo;
 
     private Integer shareUserId;

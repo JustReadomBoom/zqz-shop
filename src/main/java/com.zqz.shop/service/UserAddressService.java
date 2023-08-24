@@ -13,4 +13,6 @@ public interface UserAddressService {
     Object doQueryList(Integer userId);
 
     Object doAddAddress(Integer userId, UserAddress address);
+
+    Object doDetail(Integer userId, Integer id);
 }

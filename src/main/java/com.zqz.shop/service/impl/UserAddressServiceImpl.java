@@ -77,7 +77,6 @@ public class UserAddressServiceImpl implements UserAddressService {
             addressBusService.resetDefault(userId);
         }
         if (ObjectUtil.isEmpty(address.getId()) || address.getId().equals(0)) {
-            address.setId(null);
             address.setUserId(userId);
             addressBusService.add(address);
         } else {
@@ -88,6 +87,34 @@ public class UserAddressServiceImpl implements UserAddressService {
             }
         }
         return ResponseUtil.ok(address.getId());
+    }
+
+    @Override
+    public Object doDetail(Integer userId, Integer id) {
+        if (ObjectUtil.isEmpty(userId)) {
+            return ResponseUtil.unlogin();
+        }
+        UserAddress address = addressBusService.queryById(id);
+        if (ObjectUtil.isEmpty(address)) {
+            log.error("查看地址详情失败，地址信息不存在!");
+            return ResponseUtil.dataEmpty();
+        }
+        Map<Object, Object> data = new HashMap<>();
+        data.put("id", address.getId());
+        data.put("name", address.getName());
+        data.put("provinceId", address.getProvinceId());
+        data.put("cityId", address.getCityId());
+        data.put("areaId", address.getAreaId());
+        data.put("mobile", address.getMobile());
+        data.put("address", address.getAddress());
+        data.put("isDefault", address.getIsDefault());
+        String provinceName = regionBusService.queryById(address.getProvinceId()).getName();
+        data.put("provinceName", provinceName);
+        String cityName = regionBusService.queryById(address.getCityId()).getName();
+        data.put("cityName", cityName);
+        String areaName = regionBusService.queryById(address.getAreaId()).getName();
+        data.put("areaName", areaName);
+        return ResponseUtil.ok(data);
     }
 
 

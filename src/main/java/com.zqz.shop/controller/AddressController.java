@@ -27,4 +27,9 @@ public class AddressController {
     public Object addAddress(@LoginUser Integer userId, @RequestBody UserAddress address) {
         return userAddressService.doAddAddress(userId, address);
     }
+
+    @GetMapping("/detail")
+    public Object detail(@LoginUser Integer userId, @RequestParam Integer id) {
+        return userAddressService.doDetail(userId, id);
+    }
 }

@@ -3,6 +3,7 @@ package com.zqz.shop.service.impl;
 import com.zqz.shop.entity.Ad;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.entity.Topic;
+import com.zqz.shop.exception.ShopException;
 import com.zqz.shop.service.HomeService;
 import com.zqz.shop.service.business.AdBusService;
 import com.zqz.shop.service.business.CategoryBusService;
@@ -45,8 +46,7 @@ public class HomeServiceImpl implements HomeService {
             data.put("topicList", topics);
             return ResponseUtil.ok(data);
         } catch (Exception e) {
-            log.error("doQueryIndex error:{}", e.getMessage());
-            return "fail";
+            throw new ShopException(String.format("查询主页信息异常:%s", e.getMessage()));
         }
     }
 

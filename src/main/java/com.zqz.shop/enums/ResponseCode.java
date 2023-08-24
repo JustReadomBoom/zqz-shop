@@ -46,7 +46,8 @@ public enum ResponseCode {
     APPLY_WITHDRAWAL_FAIL(750, "申请提现金额不能大于可提现金额"),
     APPLY_WITHDRAWAL_EXIST(751, "已存在提现申请"),
     INVALID_COUPON(752, "无效购物券"),
-    INVALID_USER(753, "无效用户");
+    INVALID_USER(753, "无效用户"),
+    update_fail(754, "更新数据失败");
 
     private Integer code;
     private String desc;

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
  * @Date: Created in 10:10 2023-8-11
  */
 public interface AuthService {
-    Object doLogin(String body, HttpServletRequest request);
 
     Object doWxLogin(WxLoginInfo wxLoginInfo, HttpServletRequest request);
 

@@ -3,7 +3,9 @@ package com.zqz.shop.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
+import com.zqz.shop.bean.AddCartProductReq;
 import com.zqz.shop.bean.BrandCartGoods;
+import com.zqz.shop.bean.UpdateCartReq;
 import com.zqz.shop.entity.*;
 import com.zqz.shop.enums.ResponseCode;
 import com.zqz.shop.service.CartService;
@@ -55,16 +57,14 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Object doAddProduct(Integer userId, Cart cart) {
+    public Object doAddProduct(Integer userId, AddCartProductReq req) {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Integer productId = cart.getProductId();
-        int num = cart.getNumber().intValue();
-        Integer goodsId = cart.getGoodsId();
-        if (ObjectUtil.isAllEmpty(productId, num, goodsId)) {
-            return ResponseUtil.badArgument();
-        }
+        Integer productId = req.getProductId();
+        int num = req.getNumber().intValue();
+        Integer goodsId = req.getGoodsId();
+
         //判断商品是否可以购买
         Goods goods = goodsBusService.queryById(goodsId);
         if (ObjectUtil.isEmpty(goods) || !goods.getIsOnSale()) {
@@ -80,7 +80,10 @@ public class CartServiceImpl implements CartService {
                 log.warn("加入购物车失败，商品库存不足!");
                 return ResponseUtil.fail(ResponseCode.GOODS_NO_STOCK);
             }
-            cart.setId(null);
+            Cart cart = new Cart();
+            cart.setProductId(productId);
+            cart.setNumber(req.getNumber());
+            cart.setGoodsId(goodsId);
             cart.setGoodsSn(goods.getGoodsSn());
             cart.setBrandId(goods.getBrandId());
             cart.setGoodsName((goods.getName()));
@@ -140,15 +143,15 @@ public class CartServiceImpl implements CartService {
             List<BrandCartGoods> brandCartgoodsList = new ArrayList<>();
             for (Cart cart : cartList) {
                 Integer brandId = cart.getBrandId();
-                boolean hasExsist = false;
+                boolean hasExist = false;
                 for (int i = 0; i < brandCartgoodsList.size(); i++) {
                     if (brandCartgoodsList.get(i).getBrandId().intValue() == brandId.intValue()) {
                         brandCartgoodsList.get(i).getCartList().add(cart);
-                        hasExsist = true;
+                        hasExist = true;
                         break;
                     }
                 }
-                if (!hasExsist) {
+                if (!hasExist) {
                     // 还尚未加入，则需要查询品牌入驻商铺
                     Brand dtsBrand = brandBusService.queryById(brandId);
                     BrandCartGoods bandCartGoods = BrandCartGoods.init(dtsBrand);
@@ -182,17 +185,15 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Object doUpdate(Integer userId, Cart cart) {
+    public Object doUpdate(Integer userId, UpdateCartReq req) {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Integer id = cart.getId();
-        Integer productId = cart.getProductId();
-        Short number = cart.getNumber();
-        Integer goodsId = cart.getGoodsId();
-        if (!ObjectUtil.isAllNotEmpty(id, productId, number, goodsId)) {
-            return ResponseUtil.badArgument();
-        }
+        Integer id = req.getId();
+        Integer productId = req.getProductId();
+        Short number = req.getNumber();
+        Integer goodsId = req.getGoodsId();
+
         //判断是否存在该订单,如果不存在，直接返回错误
         Cart existCart = cartBusService.queryById(id);
         if (ObjectUtil.isEmpty(existCart)) {

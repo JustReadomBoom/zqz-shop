@@ -7,32 +7,27 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
-import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.bean.BindPhoneReq;
 import com.zqz.shop.bean.UserInfo;
 import com.zqz.shop.bean.UserToken;
 import com.zqz.shop.bean.WxLoginInfo;
 import com.zqz.shop.entity.User;
-import com.zqz.shop.enums.ResponseCode;
 import com.zqz.shop.enums.UserTypeEnum;
-import com.zqz.shop.mapper.UserMapper;
+import com.zqz.shop.exception.ShopException;
 import com.zqz.shop.service.AuthService;
+import com.zqz.shop.service.business.UserBusService;
 import com.zqz.shop.utils.IpUtil;
 import com.zqz.shop.utils.ResponseUtil;
 import com.zqz.shop.utils.UserTokenManager;
-import com.zqz.shop.utils.bcrypt.BCryptPasswordEncoder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.zqz.shop.entity.table.UserTableDef.USER;
 
 /**
  * @Author: ZQZ
@@ -43,66 +38,17 @@ import static com.zqz.shop.entity.table.UserTableDef.USER;
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
-    @Resource
-    private UserMapper userMapper;
-    @Resource
+    @Autowired
+    private UserBusService userBusService;
+    @Autowired
     private WxMaService wxMaService;
 
-    @Override
-    public Object doLogin(String body, HttpServletRequest request) {
-        log.info("======登录入参:{}", body);
-        try {
-            Map<Object, Object> result = new HashMap<>(3);
-            String userName = JSONUtil.parseObj(body).getStr("username");
-            String passWord = JSONUtil.parseObj(body).getStr("password");
-            List<User> userList = queryUserByName(userName);
-            User user;
-            if (userList.size() > 1) {
-                return ResponseUtil.serious();
-            } else if (userList.size() == 0) {
-                return ResponseUtil.badArgumentValue();
-            } else {
-                user = userList.get(0);
-            }
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            if (!encoder.matches(passWord, user.getPassword())) {
-                return ResponseUtil.fail(ResponseCode.AUTH_INVALID_ACCOUNT);
-            }
-
-            UserInfo userInfo = new UserInfo();
-            userInfo.setNickName(userName);
-            userInfo.setAvatarUrl(user.getAvatar());
-
-            String registerTime = DateUtil.format(ObjectUtil.isEmpty(user.getAddTime()) ? new Date() : user.getAddTime(), DatePattern.NORM_DATE_PATTERN);
-            userInfo.setRegisterDate(registerTime);
-            userInfo.setStatus(user.getStatus());
-            userInfo.setUserLevel(user.getUserLevel());
-            userInfo.setUserLevelDesc(UserTypeEnum.getInstance(user.getUserLevel()).getDesc());
-
-            UserToken userToken = UserTokenManager.generateToken(user.getId());
-
-            result.put("token", userToken.getToken());
-            result.put("tokenExpire", userToken.getExpireTime().toString());
-            result.put("userInfo", userInfo);
-
-            return ResponseUtil.ok(result);
-        } catch (Exception e) {
-            log.error("****** doLogin error:{}", e.getMessage());
-            return ResponseUtil.fail(e.getMessage());
-        }
-
-
-    }
 
     @Override
     public Object doWxLogin(WxLoginInfo wxLoginInfo, HttpServletRequest request) {
-        log.info("======微信登录入参:{}", JSONUtil.toJsonStr(wxLoginInfo));
         try {
             String code = wxLoginInfo.getCode();
             UserInfo userInfo = wxLoginInfo.getUserInfo();
-            if (StrUtil.isBlank(code) || ObjectUtil.isEmpty(userInfo)) {
-                return ResponseUtil.badArgument();
-            }
 
             Integer shareUserId = wxLoginInfo.getShareUserId();
             WxMaJscode2SessionResult result = this.wxMaService.getUserService().getSessionInfo(code);
@@ -110,11 +56,10 @@ public class AuthServiceImpl implements AuthService {
             String openId = result.getOpenid();
 
             if (StrUtil.isBlank(sessionKey) || StrUtil.isBlank(openId)) {
-                log.error("******微信登录获取sessionKey和openId失败");
-                return ResponseUtil.fail();
+                throw new ShopException("微信登录获取sessionKey和openId失败!");
             }
             String ip = IpUtil.getIpAddr(request);
-            User user = queryUserByOpenId(openId);
+            User user = userBusService.queryUserByOpenId(openId);
             Date now = new Date();
 
             if (ObjectUtil.isEmpty(user)) {
@@ -133,12 +78,11 @@ public class AuthServiceImpl implements AuthService {
                 user.setShareUserId(shareUserId);
                 user.setAddTime(now);
                 user.setUpdateTime(now);
-                userMapper.insertSelective(user);
-
+                userBusService.add(user);
             } else {
                 user.setLastLoginTime(now);
                 user.setLastLoginIp(ip);
-                int up = updateUserById(user);
+                int up = userBusService.updateUserById(user);
                 if (up <= 0) {
                     return ResponseUtil.updatedDataFailed();
                 }
@@ -162,8 +106,7 @@ public class AuthServiceImpl implements AuthService {
             resultMap.put("userInfo", userInfo);
             return ResponseUtil.ok(resultMap);
         } catch (Exception e) {
-            log.error("****** doWxLogin error:{}", e.getMessage());
-            return ResponseUtil.fail(e.getMessage());
+            throw new ShopException(String.format("微信登录失败:%s", e.getMessage()));
         }
     }
 
@@ -179,47 +122,22 @@ public class AuthServiceImpl implements AuthService {
         try {
             phoneNoInfo = this.wxMaService.getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
         } catch (Exception e) {
-            log.error("绑定手机号失败:{}", e.getMessage());
-            e.printStackTrace();
-            return ResponseUtil.fail();
+            throw new ShopException(String.format("绑定手机号失败:%s", e.getMessage()));
         }
         String phoneNumber = phoneNoInfo.getPhoneNumber();
-        User user = userMapper.selectOneById(userId);
+        User user = userBusService.queryById(userId);
         if (ObjectUtil.isEmpty(user)) {
             log.error("绑定手机号失败，用户:{}信息为空!", userId);
             return ResponseUtil.dataEmpty();
         }
         user.setMobile(phoneNumber);
-        int update = userMapper.update(user);
+        int update = userBusService.update(user);
         if (update <= 0) {
             return ResponseUtil.fail();
         }
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(1);
         result.put("phone", phoneNumber);
         return ResponseUtil.ok(result);
-    }
-
-    private List<User> queryUserByName(String userName) {
-        QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select()
-                .and(USER.USERNAME.eq(userName))
-                .and(USER.DELETED.eq(false));
-        return userMapper.selectListByQuery(wrapper);
-
-    }
-
-    private User queryUserByOpenId(String openId) {
-        QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select()
-                .and(USER.WEIXIN_OPENID.eq(openId))
-                .and(USER.DELETED.eq(false));
-        return userMapper.selectOneByQuery(wrapper);
-
-    }
-
-
-    private int updateUserById(User user) {
-        return userMapper.update(user);
     }
 
 

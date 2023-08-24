@@ -1,5 +1,7 @@
 package com.zqz.shop.service;
 
+import com.zqz.shop.bean.AddCartProductReq;
+import com.zqz.shop.bean.UpdateCartReq;
 import com.zqz.shop.entity.Cart;
 
 /**
@@ -11,13 +13,13 @@ import com.zqz.shop.entity.Cart;
 public interface CartService {
     Object doQueryGoodCount(Integer userId);
 
-    Object doAddProduct(Integer userId, Cart cart);
+    Object doAddProduct(Integer userId, AddCartProductReq req);
 
     Object doIndex(Integer userId);
 
     Object doChecked(Integer userId, String body);
 
-    Object doUpdate(Integer userId, Cart cart);
+    Object doUpdate(Integer userId, UpdateCartReq req);
 
     Object doDelete(Integer userId, String body);
 

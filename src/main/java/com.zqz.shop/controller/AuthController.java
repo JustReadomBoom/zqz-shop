@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * @Author: ZQZ
@@ -25,11 +26,6 @@ public class AuthController {
     private AuthService authService;
 
 
-    @PostMapping("/login")
-    public Object login(@RequestBody String body, HttpServletRequest request) {
-        return authService.doLogin(body, request);
-    }
-
     /**
      * 微信登录
      *
@@ -38,7 +34,7 @@ public class AuthController {
      * @return
      */
     @PostMapping("/login_by_weixin")
-    public Object wxLogin(@RequestBody WxLoginInfo wxLoginInfo, HttpServletRequest request) {
+    public Object wxLogin(@RequestBody @Valid WxLoginInfo wxLoginInfo, HttpServletRequest request) {
         return authService.doWxLogin(wxLoginInfo, request);
     }
 

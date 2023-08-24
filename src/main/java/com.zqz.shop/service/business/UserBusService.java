@@ -1,10 +1,13 @@
 package com.zqz.shop.service.business;
 
+import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.entity.User;
 import com.zqz.shop.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
+import static com.zqz.shop.entity.table.UserTableDef.USER;
 
 /**
  * @Author: ZQZ
@@ -22,4 +25,25 @@ public class UserBusService {
     }
 
 
+    public int add(User user) {
+        return userMapper.insertSelective(user);
+    }
+
+
+    public int update(User user) {
+        return userMapper.update(user);
+    }
+
+    public int updateUserById(User user) {
+        return userMapper.update(user);
+    }
+
+    public User queryUserByOpenId(String openId) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(USER.WEIXIN_OPENID.eq(openId))
+                .and(USER.DELETED.eq(false));
+        return userMapper.selectOneByQuery(wrapper);
+
+    }
 }
