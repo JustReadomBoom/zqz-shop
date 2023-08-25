@@ -1,5 +1,6 @@
 package com.zqz.shop.config;
 
+import com.zqz.shop.annotation.support.AdminLoginUserHandlerMethodArgumentResolver;
 import com.zqz.shop.annotation.support.LoginUserHandlerMethodArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -18,5 +19,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new LoginUserHandlerMethodArgumentResolver());
+		argumentResolvers.add(new AdminLoginUserHandlerMethodArgumentResolver());
 	}
 }
