@@ -74,7 +74,7 @@ public class GoodsBusService {
                 .and(GOODS.DELETED.eq(false))
                 .orderBy(GOODS.ADD_TIME.desc());
         List<Goods> goods = goodsMapper.selectListByQuery(wrapper);
-        if(CollectionUtil.isNotEmpty(goods)){
+        if (CollectionUtil.isNotEmpty(goods)) {
             for (Goods good : goods) {
                 ids.add(good.getId());
             }
@@ -88,5 +88,13 @@ public class GoodsBusService {
                 .and(GOODS.ID.eq(id))
                 .and(GOODS.DELETED.eq(false));
         return goodsMapper.selectOneByQuery(wrapper);
+    }
+
+    public Integer queryCount() {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(GOODS.DELETED.eq(false));
+        return (int) goodsMapper.selectCountByQuery(wrapper);
+
     }
 }

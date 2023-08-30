@@ -1,11 +1,14 @@
 package com.zqz.shop.service.business;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.bean.admin.DayStatis;
 import com.zqz.shop.entity.User;
 import com.zqz.shop.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
+import java.util.List;
 
 import static com.zqz.shop.entity.table.UserTableDef.USER;
 
@@ -44,6 +47,18 @@ public class UserBusService {
                 .and(USER.WEIXIN_OPENID.eq(openId))
                 .and(USER.DELETED.eq(false));
         return userMapper.selectOneByQuery(wrapper);
+
+    }
+
+    public List<DayStatis> queryRecentCount(Integer day) {
+        return userMapper.queryRecentCount(day);
+    }
+
+    public Integer queryCount() {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(USER.DELETED.eq(false));
+        return (int) userMapper.selectCountByQuery(wrapper);
 
     }
 }

@@ -2,8 +2,11 @@ package com.zqz.shop.service.impl;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.zqz.shop.bean.UserToken;
 import com.zqz.shop.bean.admin.AdminLoginReq;
 import com.zqz.shop.entity.Admin;
@@ -11,6 +14,8 @@ import com.zqz.shop.enums.AdminResponseCode;
 import com.zqz.shop.exception.ShopException;
 import com.zqz.shop.service.AdminAuthService;
 import com.zqz.shop.service.business.AdminBusService;
+import com.zqz.shop.service.business.RoleBusService;
+import com.zqz.shop.service.business.SysPermissionBusService;
 import com.zqz.shop.utils.CaptchaCodeManager;
 import com.zqz.shop.utils.ResponseUtil;
 import com.zqz.shop.utils.UserTokenManager;
@@ -24,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author: ZQZ
@@ -36,6 +42,10 @@ import java.util.Map;
 public class AdminAuthServiceImpl implements AdminAuthService {
     @Autowired
     private AdminBusService adminBusService;
+    @Autowired
+    private RoleBusService roleBusService;
+    @Autowired
+    private SysPermissionBusService permissionBusService;
 
 
     @Override
@@ -60,7 +70,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         }
         Admin admin = adminList.get(0);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if(!encoder.matches(passWord, admin.getPassword())){
+        if (!encoder.matches(passWord, admin.getPassword())) {
             log.error("登陆失败，密码不正确");
             throw new ShopException(AdminResponseCode.AUTH_PASSWORD_ERROR.getDesc());
         }
@@ -102,5 +112,24 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 ce.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public Object doInfo(Integer userId) {
+        Map<String, Object> data = new HashMap<>(4);
+        Admin admin = adminBusService.queryByUserId(userId);
+        if (ObjectUtil.isEmpty(admin)) {
+            log.error("获取用户失败:用户{}不存在", userId);
+            return ResponseUtil.dataEmpty();
+        }
+        data.put("name", admin.getUsername());
+        data.put("avatar", admin.getAvatar());
+        String roleIdsStr = admin.getRoleIds();
+        List<Integer> roleIds = JSONUtil.parseArray(roleIdsStr).toList(Integer.class);
+        Set<String> roleNames = roleBusService.queryByIds(roleIds);
+        data.put("roles", roleNames);
+        Set<String> permissions = permissionBusService.queryByRoles(roleIds);
+        data.put("perms", permissions);
+        return ResponseUtil.ok(data);
     }
 }

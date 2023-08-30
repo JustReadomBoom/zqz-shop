@@ -1,5 +1,6 @@
 package com.zqz.shop.controller.admin;
 
+import com.zqz.shop.annotation.AdminLoginUser;
 import com.zqz.shop.bean.admin.AdminLoginReq;
 import com.zqz.shop.service.AdminAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,10 @@ public class AdminAuthController {
     @GetMapping("/captchaImage")
     public Object getImgCode(HttpServletResponse response) {
         return adminAuthService.doGetImgCode();
+    }
+
+    @GetMapping("/info")
+    public Object info(@AdminLoginUser Integer userId) {
+        return adminAuthService.doInfo(userId);
     }
 }

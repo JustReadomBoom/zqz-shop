@@ -10,6 +10,8 @@ import com.mybatisflex.core.query.QueryCondition;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
+import com.zqz.shop.bean.admin.CategorySellAmts;
+import com.zqz.shop.bean.admin.DayStatis;
 import com.zqz.shop.entity.Order;
 import com.zqz.shop.mapper.OrderMapper;
 import com.zqz.shop.utils.OrderUtil;
@@ -121,5 +123,21 @@ public class OrderBusService {
         order.setUpdateTime(new Date());
         order.setDeleted(true);
         return orderMapper.update(order);
+    }
+
+    public List<DayStatis> queryRecentCount(Integer days) {
+        return orderMapper.queryRecentCount(days);
+    }
+
+    public List<CategorySellAmts> categorySell() {
+        return orderMapper.categorySell();
+    }
+
+    public Integer queryCount() {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(ORDER.DELETED.eq(false));
+        return (int) orderMapper.selectCountByQuery(wrapper);
+
     }
 }

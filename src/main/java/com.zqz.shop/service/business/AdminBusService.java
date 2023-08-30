@@ -29,4 +29,12 @@ public class AdminBusService {
                 .and(ADMIN.DELETED.eq(false));
         return adminMapper.selectListByQuery(wrapper);
     }
+
+    public Admin queryByUserId(Integer userId){
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(ADMIN.ID.eq(userId))
+                .and(ADMIN.DELETED.eq(false));
+        return adminMapper.selectOneByQuery(wrapper);
+    }
 }

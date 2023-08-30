@@ -13,4 +13,5 @@ public interface AdminAuthService {
 
     Object doGetImgCode();
 
+    Object doInfo(Integer userId);
 }

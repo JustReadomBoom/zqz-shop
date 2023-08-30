@@ -59,4 +59,12 @@ public class GoodsProductBusService {
     public int addStock(Integer productId, Short number) {
         return productMapper.addStock(productId, number);
     }
+
+    public Integer queryCount() {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(GOODS_PRODUCT.DELETED.eq(false));
+        return (int) productMapper.selectCountByQuery(wrapper);
+
+    }
 }

@@ -30,7 +30,7 @@ public class Admin {
 
     private Boolean deleted;
 
-    private Integer[] roleIds;
+    private String roleIds;
 
     private String desc;
 
