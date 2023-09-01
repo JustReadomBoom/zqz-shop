@@ -1,5 +1,7 @@
 package com.zqz.shop.service.business;
 
+import cn.hutool.core.util.StrUtil;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.mapper.CategoryMapper;
@@ -57,5 +59,19 @@ public class CategoryBusService {
                 .and(CATEGORY.LEVEL.eq("L1"))
                 .and(CATEGORY.DELETED.eq(false));
         return categoryMapper.selectListByQuery(wrapper);
+    }
+
+    public Page<Category> queryPage(Integer page, Integer limit, String id, String name) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and("1 = 1");
+        if (StrUtil.isNotBlank(id)) {
+            wrapper.and(CATEGORY.ID.eq(id));
+        }
+        if (StrUtil.isNotBlank(name)) {
+            wrapper.and(CATEGORY.NAME.like(name));
+        }
+        wrapper.and(CATEGORY.DELETED.eq(false))
+                .orderBy(CATEGORY.ADD_TIME.desc());
+        return categoryMapper.paginateWithRelations(page, limit, wrapper);
     }
 }

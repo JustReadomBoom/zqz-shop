@@ -1,5 +1,7 @@
 package com.zqz.shop.service.business;
 
+import cn.hutool.core.util.StrUtil;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.mapper.AdminMapper;
@@ -30,11 +32,29 @@ public class AdminBusService {
         return adminMapper.selectListByQuery(wrapper);
     }
 
-    public Admin queryByUserId(Integer userId){
+    public Admin queryByUserId(Integer userId) {
         QueryWrapper wrapper = QueryWrapper.create();
         wrapper.select()
                 .and(ADMIN.ID.eq(userId))
                 .and(ADMIN.DELETED.eq(false));
         return adminMapper.selectOneByQuery(wrapper);
+    }
+
+    public Page<Admin> queryPage(Integer page, Integer limit, String username) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        QueryWrapper select = wrapper.select().and("1 = 1");
+        if (StrUtil.isNotBlank(username)) {
+            select = select.and(ADMIN.USERNAME.like(username));
+        }
+        select.and(ADMIN.DELETED.eq(false))
+                .orderBy(ADMIN.ADD_TIME.desc());
+        return adminMapper.paginateWithRelations(page, limit, select);
+    }
+
+    public List<Admin> queryAllAdmin() {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(ADMIN.DELETED.eq(false));
+        return adminMapper.selectListByQuery(wrapper);
     }
 }

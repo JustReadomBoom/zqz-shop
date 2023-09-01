@@ -1,5 +1,7 @@
 package com.zqz.shop.service.business;
 
+import cn.hutool.core.util.StrUtil;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.entity.SysKeyword;
 import com.zqz.shop.mapper.SysKeywordMapper;
@@ -36,5 +38,19 @@ public class SysKeywordBusService {
                 .and(SYS_KEYWORD.IS_HOT.eq(true))
                 .and(SYS_KEYWORD.DELETED.eq(false));
         return keywordMapper.selectListByQuery(wrapper);
+    }
+
+    public Page<SysKeyword> queryPage(Integer page, Integer limit, String keyword, String url) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and("1 = 1");
+        if (StrUtil.isNotBlank(keyword)) {
+            wrapper.and(SYS_KEYWORD.KEYWORD.like(keyword));
+        }
+        if (StrUtil.isNotBlank(url)) {
+            wrapper.and(SYS_KEYWORD.URL.like(url));
+        }
+        wrapper.and(SYS_KEYWORD.DELETED.eq(false))
+                .orderBy(SYS_KEYWORD.ADD_TIME.desc());
+        return keywordMapper.paginateWithRelations(page, limit, wrapper);
     }
 }

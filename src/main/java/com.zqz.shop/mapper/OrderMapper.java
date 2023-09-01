@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -32,5 +33,16 @@ public interface OrderMapper extends BaseMapper<Order> {
             " where og.deleted = 0 and o.order_status not in(101, 102, 103) " +
             " group by pc.name ")
     List<CategorySellAmts> categorySell();
+
+
+    @Select(" select " +
+            " substr(add_time, 1, 10) as day," +
+            " count(id) as orders," +
+            " count(distinct user_id) as customers," +
+            " sum(actual_price) as amount," +
+            " round(sum(actual_price)/count(distinct user_id), 2) as pcr" +
+            " from `order` " +
+            " group by substr(add_time, 1, 10)")
+    List<Map> statOrder();
 
 }

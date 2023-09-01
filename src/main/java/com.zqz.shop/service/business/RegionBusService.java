@@ -1,5 +1,7 @@
 package com.zqz.shop.service.business;
 
+import cn.hutool.core.util.StrUtil;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.entity.Region;
 import com.zqz.shop.mapper.RegionMapper;
@@ -54,5 +56,18 @@ public class RegionBusService {
         wrapper.select()
                 .and(REGION.PID.eq(pid));
         return regionMapper.selectListByQuery(wrapper);
+    }
+
+    public Page<Region> queryPage(Integer page, Integer limit, String name, String code) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and("1 = 1");
+        if (StrUtil.isNotBlank(name)) {
+            wrapper.and(REGION.NAME.like(name));
+        }
+        if (StrUtil.isNotBlank(code)) {
+            wrapper.and(REGION.CODE.eq(code));
+        }
+        wrapper.orderBy(REGION.ID.desc());
+        return regionMapper.paginateWithRelations(page, limit, wrapper);
     }
 }

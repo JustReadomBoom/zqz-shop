@@ -5,6 +5,7 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryCondition;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.zqz.shop.entity.table.OrderGoodsTableDef.ORDER_GOODS;
 import static com.zqz.shop.entity.table.OrderTableDef.ORDER;
 
 /**
@@ -138,6 +140,52 @@ public class OrderBusService {
         wrapper.select()
                 .and(ORDER.DELETED.eq(false));
         return (int) orderMapper.selectCountByQuery(wrapper);
+
+    }
+
+    public List<Map> statOrder() {
+        return orderMapper.statOrder();
+    }
+
+
+    public Page<Order> queryPage(Integer userId, String orderSn, List<Short> orderStatusArray, Integer page, Integer limit) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        QueryWrapper select = wrapper.select().and("1 = 1");
+        if (ObjectUtil.isNotEmpty(userId)) {
+            select = select.and(ORDER.USER_ID.eq(userId));
+        }
+        if (StrUtil.isNotBlank(orderSn)) {
+            select = select.and(ORDER.ORDER_SN.eq(orderSn));
+        }
+        if (CollectionUtil.isNotEmpty(orderStatusArray)) {
+            select = select.and(ORDER.ORDER_STATUS.in(orderStatusArray));
+        }
+        select.and(ORDER.DELETED.eq(false));
+        return orderMapper.paginateWithRelations(page, limit, select);
+    }
+
+
+    public Page<Order> queryBrandPage(List<Integer> brandIds, Integer userId, String orderSn, List<Short> orderStatusArray, Integer page, Integer limit) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        QueryWrapper select = wrapper.select(ORDER.ALL_COLUMNS)
+                .from(ORDER)
+                .leftJoin(ORDER_GOODS).on(ORDER.ID.eq(ORDER_GOODS.GOODS_ID))
+                .and(ORDER.DELETED.eq(false));
+        if (ObjectUtil.isNotEmpty(userId)) {
+            select = select.and(ORDER.USER_ID.eq(userId));
+        }
+        if (StrUtil.isNotBlank(orderSn)) {
+            select = select.and(ORDER.ORDER_SN.eq(orderSn));
+        }
+        if (CollectionUtil.isNotEmpty(orderStatusArray)) {
+            select = select.and(ORDER.ORDER_STATUS.in(orderStatusArray));
+        }
+        if(CollectionUtil.isNotEmpty(brandIds)){
+            select = select.and(ORDER_GOODS.BRAND_ID.in(brandIds));
+        }
+        select.orderBy(ORDER.ADD_TIME.desc());
+        return orderMapper.paginateWithRelations(page, limit, select);
+
 
     }
 }

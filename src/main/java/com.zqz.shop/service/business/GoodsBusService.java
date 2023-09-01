@@ -54,7 +54,7 @@ public class GoodsBusService {
         select.and(GOODS.IS_ON_SALE.eq(true))
                 .and(GOODS.DELETED.eq(false))
                 .orderBy(GOODS.ADD_TIME.desc());
-        return goodsMapper.paginateWithRelations(page, size, wrapper);
+        return goodsMapper.paginateWithRelations(page, size, select);
     }
 
     public List<Integer> queryCategoryIds(String keyword, Boolean isNew, Boolean isHot) {
@@ -96,5 +96,22 @@ public class GoodsBusService {
                 .and(GOODS.DELETED.eq(false));
         return (int) goodsMapper.selectCountByQuery(wrapper);
 
+    }
+
+    public Page<Goods> queryPage(String goodsSn, String name, Integer page, Integer limit, List<Integer> brandIds) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        QueryWrapper select = wrapper.select().and("1 = 1");
+        if (StrUtil.isNotBlank(goodsSn)) {
+            select = select.and(GOODS.GOODS_SN.eq(goodsSn));
+        }
+        if (StrUtil.isNotBlank(name)) {
+            select = select.and(GOODS.NAME.like(name));
+        }
+        if (CollectionUtil.isNotEmpty(brandIds)) {
+            select = select.and(GOODS.BRAND_ID.in(brandIds));
+        }
+        select.and(GOODS.DELETED.eq(false))
+                .orderBy(GOODS.ADD_TIME.desc());
+        return goodsMapper.paginateWithRelations(page, limit, select);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 import static com.zqz.shop.entity.table.OrderGoodsTableDef.ORDER_GOODS;
 
@@ -32,5 +33,9 @@ public class OrderGoodsBusService {
 
     public int add(OrderGoods orderGoods) {
         return orderGoodsMapper.insertSelective(orderGoods);
+    }
+
+    public List<Map> statGoods() {
+        return orderGoodsMapper.statGoods();
     }
 }

@@ -79,7 +79,7 @@ public class UserAddressBusService {
         }
         select.and(USER_ADDRESS.DELETED.eq(false))
                 .orderBy(USER_ADDRESS.ADD_TIME.desc());
-        return addressMapper.paginateWithRelations(page, limit, wrapper);
+        return addressMapper.paginateWithRelations(page, limit, select);
     }
 
     public Map<String, Object> toVo(UserAddress address) {

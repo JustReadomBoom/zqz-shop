@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -22,4 +23,13 @@ public interface UserMapper extends BaseMapper<User> {
             " and t.deleted = 0 " +
             " group by date_format(t.add_time,\"%Y-%m-%d\")")
     List<DayStatis> queryRecentCount(@Param("days") Integer days);
+
+
+    @Select("select " +
+            "substr(add_time, 1, 10) as day," +
+            "count(distinct id) as users " +
+            "from user " +
+            "group by substr(add_time, 1, 10)")
+    List<Map> statUser();
+
 }
