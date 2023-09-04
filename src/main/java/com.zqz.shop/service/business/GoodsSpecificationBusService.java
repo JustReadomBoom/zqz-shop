@@ -9,10 +9,7 @@ import com.zqz.shop.mapper.GoodsSpecificationMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.zqz.shop.entity.table.GoodsSpecificationTableDef.GOODS_SPECIFICATION;
 
@@ -62,5 +59,16 @@ public class GoodsSpecificationBusService {
             }
         }
         return specificationVoList;
+    }
+
+    public int deleteByGoodsId(Integer id) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and(GOODS_SPECIFICATION.GOODS_ID.eq(id));
+        return specificationMapper.deleteByQuery(wrapper);
+    }
+
+    public int add(GoodsSpecification specification) {
+        specification.setAddTime(new Date());
+        return specificationMapper.insertSelective(specification);
     }
 }

@@ -38,4 +38,11 @@ public class OrderGoodsBusService {
     public List<Map> statGoods() {
         return orderGoodsMapper.statGoods();
     }
+
+    public boolean checkExist(Integer goodsId) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and(ORDER_GOODS.GOODS_ID.eq(goodsId))
+                .and(ORDER_GOODS.DELETED.eq(false));
+        return orderGoodsMapper.selectCountByQuery(wrapper) != 0;
+    }
 }

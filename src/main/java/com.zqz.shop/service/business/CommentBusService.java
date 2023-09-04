@@ -61,4 +61,7 @@ public class CommentBusService {
     }
 
 
+    public int logicalDeleteById(Integer id) {
+        return commentMapper.logicalDeleteById(id);
+    }
 }

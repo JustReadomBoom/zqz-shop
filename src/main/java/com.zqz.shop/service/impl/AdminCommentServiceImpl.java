@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.entity.Comment;
+import com.zqz.shop.enums.AdminResponseCode;
 import com.zqz.shop.service.AdminCommentService;
 import com.zqz.shop.service.AdminGoodsService;
 import com.zqz.shop.service.business.CommentBusService;
@@ -61,5 +62,18 @@ public class AdminCommentServiceImpl implements AdminCommentService {
         data.put("total", total);
         data.put("items", commentList);
         return ResponseUtil.ok(data);
+    }
+
+    @Override
+    public Object doDeleteInfo(Integer adminUserId, Comment comment) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        Integer id = comment.getId();
+        int delete = commentBusService.logicalDeleteById(id);
+        if (delete <= 0) {
+            return ResponseUtil.fail(AdminResponseCode.AUTH_OPE_ERROR);
+        }
+        return ResponseUtil.ok();
     }
 }

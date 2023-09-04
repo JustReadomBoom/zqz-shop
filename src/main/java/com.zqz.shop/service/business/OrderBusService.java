@@ -160,7 +160,8 @@ public class OrderBusService {
         if (CollectionUtil.isNotEmpty(orderStatusArray)) {
             select = select.and(ORDER.ORDER_STATUS.in(orderStatusArray));
         }
-        select.and(ORDER.DELETED.eq(false));
+        select.and(ORDER.DELETED.eq(false))
+                .orderBy(ORDER.ADD_TIME.desc());
         return orderMapper.paginateWithRelations(page, limit, select);
     }
 

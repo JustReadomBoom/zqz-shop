@@ -32,4 +32,13 @@ public class GoodsAttributeBusService {
     }
 
 
+    public int deleteByGoodsId(Integer id) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and(GOODS_ATTRIBUTE.GOODS_ID.eq(id));
+        return goodsAttributeMapper.deleteByQuery(wrapper);
+    }
+
+    public int add(GoodsAttribute attribute) {
+        return goodsAttributeMapper.insertSelective(attribute);
+    }
 }

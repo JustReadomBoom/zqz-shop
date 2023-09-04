@@ -1,21 +1,25 @@
 package com.zqz.shop.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.paginate.Page;
-import com.zqz.shop.bean.admin.CatVo;
-import com.zqz.shop.entity.Admin;
-import com.zqz.shop.entity.Brand;
-import com.zqz.shop.entity.Category;
-import com.zqz.shop.entity.Goods;
+import com.zqz.shop.bean.GoodsProductVo;
+import com.zqz.shop.bean.admin.*;
+import com.zqz.shop.entity.*;
+import com.zqz.shop.enums.AdminResponseCode;
+import com.zqz.shop.exception.ShopException;
 import com.zqz.shop.service.AdminGoodsService;
 import com.zqz.shop.service.business.*;
 import com.zqz.shop.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -40,6 +44,16 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
     private GoodsBusService goodsBusService;
     @Autowired
     private CategoryBusService categoryBusService;
+    @Autowired
+    private GoodsSpecificationBusService goodsSpecificationBusService;
+    @Autowired
+    private GoodsAttributeBusService goodsAttributeBusService;
+    @Autowired
+    private GoodsProductBusService goodsProductBusService;
+    @Autowired
+    private OrderGoodsBusService orderGoodsBusService;
+    @Autowired
+    private CartBusService cartBusService;
 
     @Override
     public Object doQueryList(Integer userId, Integer page, Integer limit, String goodsSn, String name) {
@@ -152,6 +166,264 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
             }
         }
         return brandIds;
+    }
+
+    @Override
+    public Object doDelete(Integer adminUserId, Goods goods) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        Integer id = goods.getId();
+        goodsBusService.deleteById(id);
+        goodsSpecificationBusService.deleteByGoodsId(id);
+        goodsAttributeBusService.deleteByGoodsId(id);
+        goodsProductBusService.deleteByGoodsId(id);
+        return ResponseUtil.ok();
+    }
+
+    @Override
+    public Object doDetail(Integer adminUserId, Integer id) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        Map<String, Object> data = new HashMap<>(5);
+        Goods goods = goodsBusService.queryById(id);
+        List<GoodsProductVo> goodsProductVos = goodsProductBusService.queryListByGoodsId(id);
+        List<GoodsSpecification> goodsSpecifications = goodsSpecificationBusService.queryByGoodsId(id);
+        List<GoodsAttribute> goodsAttributes = goodsAttributeBusService.queryListByGoodsId(id);
+
+        if (ObjectUtil.isEmpty(goods)) {
+            return ResponseUtil.dataEmpty();
+        }
+        Integer categoryId = goods.getCategoryId();
+        Category category = categoryBusService.queryById(categoryId);
+        Integer[] categoryIds = new Integer[]{};
+        if (ObjectUtil.isNotEmpty(category)) {
+            Integer parentCategoryId = category.getPid();
+            categoryIds = new Integer[]{parentCategoryId, categoryId};
+        }
+
+        data.put("goods", goods);
+        data.put("specifications", goodsSpecifications);
+        data.put("products", goodsProductVos);
+        data.put("attributes", goodsAttributes);
+        data.put("categoryIds", categoryIds);
+        return ResponseUtil.ok(data);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Object doUpdateInfo(Integer adminUserId, GoodsUpdateReq req) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+
+        Object validateMsg = updateValidate(req);
+        if (ObjectUtil.isNotEmpty(validateMsg)) {
+            return validateMsg;
+        }
+
+        Goods goods = req.getGoods();
+        List<GoodsProductUpdateVo> products = req.getProducts();
+        List<GoodsAttributeUpdateVo> attributes = req.getAttributes();
+        List<GoodsSpecificationUpdateVo> specifications = req.getSpecifications();
+
+        Integer goodsId = goods.getId();
+
+        boolean orderGoodsExist = orderGoodsBusService.checkExist(goodsId);
+        boolean cartExist = cartBusService.checkExist(goodsId);
+        if (orderGoodsExist || cartExist) {
+            return ResponseUtil.fail(AdminResponseCode.GOODS_UPDATE_NOT_ALLOWED);
+        }
+
+        int up = goodsBusService.updateById(goods);
+        if (up <= 0) {
+            throw new ShopException("商品更新失败!");
+        }
+
+        goodsSpecificationBusService.deleteByGoodsId(goodsId);
+        goodsAttributeBusService.deleteByGoodsId(goodsId);
+        goodsProductBusService.deleteByGoodsId(goodsId);
+
+        for (GoodsSpecificationUpdateVo specification : specifications) {
+            GoodsSpecification newSpec = new GoodsSpecification();
+            BeanUtil.copyProperties(specification, newSpec);
+            newSpec.setGoodsId(goodsId);
+            newSpec.setUpdateTime(new Date());
+            goodsSpecificationBusService.add(newSpec);
+        }
+
+        for (GoodsProductUpdateVo product : products) {
+            GoodsProduct newPro = new GoodsProduct();
+            BeanUtil.copyProperties(product, newPro);
+            newPro.setSpecifications(JSONUtil.toJsonStr(product.getSpecifications()));
+            newPro.setGoodsId(goodsId);
+            newPro.setUpdateTime(new Date());
+            goodsProductBusService.add(newPro);
+
+        }
+
+        for (GoodsAttributeUpdateVo attribute : attributes) {
+            GoodsAttribute newAtt = new GoodsAttribute();
+            BeanUtil.copyProperties(attribute, newAtt);
+            newAtt.setGoodsId(goodsId);
+            newAtt.setUpdateTime(new Date());
+            goodsAttributeBusService.add(newAtt);
+        }
+        return ResponseUtil.ok();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Object doCreateInfo(Integer adminUserId, GoodsCreateReq req) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+
+        Object validateMsg = createValidate(req);
+        if (ObjectUtil.isNotEmpty(validateMsg)) {
+            return validateMsg;
+        }
+
+        CreateGoodsVo goods = req.getGoods();
+        List<GoodsProductUpdateVo> products = req.getProducts();
+        List<GoodsAttributeUpdateVo> attributes = req.getAttributes();
+        List<GoodsSpecificationUpdateVo> specifications = req.getSpecifications();
+
+        String name = goods.getName();
+        Integer goodsId = goods.getId();
+        boolean goodsExist = goodsBusService.checkExistByName(name);
+        if (goodsExist) {
+            return ResponseUtil.fail(AdminResponseCode.GOODS_NAME_EXIST);
+        }
+
+        Goods newGoods = new Goods();
+        BeanUtil.copyProperties(goods, newGoods);
+        newGoods.setGallery(JSONUtil.toJsonStr(goods.getGallery()));
+        int add = goodsBusService.add(newGoods);
+        if (add <= 0) {
+            throw new ShopException("商品上架失败!");
+        }
+
+        for (GoodsSpecificationUpdateVo specification : specifications) {
+            GoodsSpecification newSpec = new GoodsSpecification();
+            BeanUtil.copyProperties(specification, newSpec);
+            newSpec.setGoodsId(goodsId);
+            goodsSpecificationBusService.add(newSpec);
+        }
+
+        for (GoodsProductUpdateVo product : products) {
+            GoodsProduct newPro = new GoodsProduct();
+            BeanUtil.copyProperties(product, newPro);
+            newPro.setSpecifications(JSONUtil.toJsonStr(product.getSpecifications()));
+            newPro.setGoodsId(goodsId);
+            goodsProductBusService.add(newPro);
+        }
+
+        for (GoodsAttributeUpdateVo attribute : attributes) {
+            GoodsAttribute newAtt = new GoodsAttribute();
+            BeanUtil.copyProperties(attribute, newAtt);
+            newAtt.setGoodsId(goodsId);
+            goodsAttributeBusService.add(newAtt);
+        }
+        return ResponseUtil.ok();
+    }
+
+    private Object updateValidate(GoodsUpdateReq req) {
+        Goods goods = req.getGoods();
+        String name = goods.getName();
+        if (StrUtil.isBlank(name)) {
+            return ResponseUtil.badArgument();
+        }
+        String goodsSn = goods.getGoodsSn();
+        if (StrUtil.isBlank(goodsSn)) {
+            return ResponseUtil.badArgument();
+        }
+        Integer brandId = goods.getBrandId();
+        if (ObjectUtil.isNotEmpty(brandId) && brandId != 0) {
+            if (ObjectUtil.isEmpty(brandBusService.queryById(brandId))) {
+                return ResponseUtil.badArgumentValue();
+            }
+        }
+        // 分类可以不设置，如果设置则需要验证分类存在
+        Integer categoryId = goods.getCategoryId();
+        if (ObjectUtil.isNotEmpty(categoryId) && categoryId != 0) {
+            if (ObjectUtil.isEmpty(categoryBusService.queryById(categoryId))) {
+                return ResponseUtil.badArgumentValue();
+            }
+        }
+        return validate(req.getAttributes(), req.getSpecifications(), req.getProducts());
+    }
+
+    private Object createValidate(GoodsCreateReq req) {
+        CreateGoodsVo goods = req.getGoods();
+        String name = goods.getName();
+        if (StrUtil.isBlank(name)) {
+            return ResponseUtil.badArgument();
+        }
+        String goodsSn = goods.getGoodsSn();
+        if (StrUtil.isBlank(goodsSn)) {
+            return ResponseUtil.badArgument();
+        }
+        Integer brandId = goods.getBrandId();
+        if (ObjectUtil.isNotEmpty(brandId) && brandId != 0) {
+            if (ObjectUtil.isEmpty(brandBusService.queryById(brandId))) {
+                return ResponseUtil.badArgumentValue();
+            }
+        }
+        // 分类可以不设置，如果设置则需要验证分类存在
+        Integer categoryId = goods.getCategoryId();
+        if (ObjectUtil.isNotEmpty(categoryId) && categoryId != 0) {
+            if (ObjectUtil.isEmpty(categoryBusService.queryById(categoryId))) {
+                return ResponseUtil.badArgumentValue();
+            }
+        }
+        return validate(req.getAttributes(), req.getSpecifications(), req.getProducts());
+    }
+
+
+    private Object validate(List<GoodsAttributeUpdateVo> attributes,
+                            List<GoodsSpecificationUpdateVo> specifications, List<GoodsProductUpdateVo> products) {
+        for (GoodsAttributeUpdateVo attribute : attributes) {
+            String attr = attribute.getAttribute();
+            if (StrUtil.isBlank(attr)) {
+                return ResponseUtil.badArgument();
+            }
+            String value = attribute.getValue();
+            if (StrUtil.isBlank(value)) {
+                return ResponseUtil.badArgument();
+            }
+        }
+
+        for (GoodsSpecificationUpdateVo specification : specifications) {
+            String spec = specification.getSpecification();
+            if (StrUtil.isBlank(spec)) {
+                return ResponseUtil.badArgument();
+            }
+            String value = specification.getValue();
+            if (StrUtil.isBlank(value)) {
+                return ResponseUtil.badArgument();
+            }
+        }
+
+        for (GoodsProductUpdateVo product : products) {
+            Integer number = product.getNumber();
+            if (ObjectUtil.isEmpty(number) || number < 0) {
+                return ResponseUtil.badArgument();
+            }
+
+            BigDecimal price = product.getPrice();
+            if (price == null) {
+                return ResponseUtil.badArgument();
+            }
+
+            List<String> productSpecifications = product.getSpecifications();
+            if (CollectionUtil.isEmpty(productSpecifications)) {
+                return ResponseUtil.badArgument();
+            }
+
+        }
+        return null;
     }
 
 

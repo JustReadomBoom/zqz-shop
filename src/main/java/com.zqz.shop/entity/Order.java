@@ -1,5 +1,7 @@
 package com.zqz.shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
@@ -59,6 +61,7 @@ public class Order {
 
     private Date endTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date addTime;
 
     private Date updateTime;

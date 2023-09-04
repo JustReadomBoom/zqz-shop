@@ -77,4 +77,12 @@ public class CartBusService {
     public int clearGoods(Integer userId) {
         return cartMapper.deleteByUserId(userId);
     }
+
+    public boolean checkExist(Integer goodsId) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and(CART.GOODS_ID.eq(goodsId))
+                .and(CART.CHECKED.eq(true))
+                .and(CART.DELETED.eq(false));
+        return cartMapper.selectCountByQuery(wrapper) != 0;
+    }
 }

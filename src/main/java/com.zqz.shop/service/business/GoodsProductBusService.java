@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.zqz.shop.entity.table.GoodsProductTableDef.GOODS_PRODUCT;
@@ -66,5 +67,16 @@ public class GoodsProductBusService {
                 .and(GOODS_PRODUCT.DELETED.eq(false));
         return (int) productMapper.selectCountByQuery(wrapper);
 
+    }
+
+    public int deleteByGoodsId(Integer id) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select().and(GOODS_PRODUCT.GOODS_ID.eq(id));
+        return productMapper.deleteByQuery(wrapper);
+    }
+
+    public int add(GoodsProduct product) {
+        product.setAddTime(new Date());
+        return productMapper.insertSelective(product);
     }
 }

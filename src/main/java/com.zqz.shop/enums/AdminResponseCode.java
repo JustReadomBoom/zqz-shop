@@ -32,7 +32,8 @@ public enum AdminResponseCode {
 	AUTH_CAPTCHA_ERROR(644,"验证码错误"),
 	AUTH_CAPTCHA_EXPIRED(645,"验证码过期"),
 	AUTH_ADMIN_NOT_EXIST(646, "用户不存在"),
-	AUTH_PASSWORD_ERROR(647, "密码错误");
+	AUTH_PASSWORD_ERROR(647, "密码错误"),
+	AUTH_OPE_ERROR(648, "操作失败");
 
 	private final Integer code;
 	private final String desc;

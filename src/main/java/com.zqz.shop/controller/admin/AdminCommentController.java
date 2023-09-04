@@ -1,12 +1,10 @@
 package com.zqz.shop.controller.admin;
 
 import com.zqz.shop.annotation.AdminLoginUser;
+import com.zqz.shop.entity.Comment;
 import com.zqz.shop.service.AdminCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: ZQZ
@@ -27,5 +25,12 @@ public class AdminCommentController {
                             String userId,
                             String valueId) {
         return adminCommentService.doQueryList(adminUserId, page, limit, userId, valueId);
+    }
+
+
+    @PostMapping("/delete")
+    public Object deleteInfo(@AdminLoginUser Integer adminUserId,
+                             @RequestBody Comment comment) {
+        return adminCommentService.doDeleteInfo(adminUserId, comment);
     }
 }
