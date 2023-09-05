@@ -3,11 +3,13 @@ package com.zqz.shop.service.business;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.bean.admin.AdminUpdateReq;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.mapper.AdminMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 import static com.zqz.shop.entity.table.AdminTableDef.ADMIN;
@@ -56,5 +58,14 @@ public class AdminBusService {
         wrapper.select()
                 .and(ADMIN.DELETED.eq(false));
         return adminMapper.selectListByQuery(wrapper);
+    }
+
+    public int logicalDeleteById(Integer id) {
+        return adminMapper.logicalDeleteById(id);
+    }
+
+    public int updateById(Admin admin) {
+        admin.setUpdateTime(new Date());
+        return adminMapper.update(admin);
     }
 }

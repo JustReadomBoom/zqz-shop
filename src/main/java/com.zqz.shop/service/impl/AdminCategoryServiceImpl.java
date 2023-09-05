@@ -1,6 +1,7 @@
 package com.zqz.shop.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.service.AdminCategoryService;
@@ -9,6 +10,7 @@ import com.zqz.shop.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,5 +55,35 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             data.add(d);
         }
         return ResponseUtil.ok(data);
+    }
+
+    @Override
+    public Object doCreateInfo(Integer adminUserId, Category category) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        String name = category.getName();
+        if (StrUtil.isBlank(name)) {
+            return ResponseUtil.badArgument();
+        }
+
+        String level = category.getLevel();
+        if (StrUtil.isBlank(level)) {
+            return ResponseUtil.badArgument();
+        }
+        if (!level.equals("L1") && !level.equals("L2")) {
+            return ResponseUtil.badArgument();
+        }
+
+        Integer pid = category.getPid();
+        if (level.equals("L2") && (pid == null)) {
+            return ResponseUtil.badArgument();
+        }
+
+        int add = categoryBusService.add(category);
+        if(add <= 0){
+            return ResponseUtil.updatedDataFailed();
+        }
+        return ResponseUtil.ok();
     }
 }

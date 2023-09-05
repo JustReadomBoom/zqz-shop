@@ -9,6 +9,7 @@ import com.zqz.shop.mapper.RoleMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,5 +62,28 @@ public class RoleBusService {
         }
         wrapper.orderBy(ROLE.ADD_TIME.desc());
         return roleMapper.paginateWithRelations(page, limit, wrapper);
+    }
+
+    public boolean checkExist(String name) {
+        QueryWrapper wrapper = QueryWrapper.create();
+        wrapper.select()
+                .and(ROLE.NAME.eq(name))
+                .and(ROLE.DELETED.eq(false));
+        return roleMapper.selectCountByQuery(wrapper) != 0;
+    }
+
+    public int add(Role role) {
+        role.setAddTime(new Date());
+        role.setUpdateTime(new Date());
+        return roleMapper.insertSelective(role);
+    }
+
+    public int logicalDeleteById(Integer id) {
+        return roleMapper.logicalDeleteById(id);
+    }
+
+    public int updateById(Role role) {
+        role.setUpdateTime(new Date());
+        return roleMapper.update(role);
     }
 }

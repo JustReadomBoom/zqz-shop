@@ -1,12 +1,11 @@
 package com.zqz.shop.controller.admin;
 
 import com.zqz.shop.annotation.AdminLoginUser;
+import com.zqz.shop.bean.admin.AdminUpdateReq;
+import com.zqz.shop.entity.Admin;
 import com.zqz.shop.service.AdminAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: ZQZ
@@ -21,10 +20,24 @@ public class AdminAdminController {
     private AdminAdminService adminAdminService;
 
     @GetMapping("/list")
-    public Object queryList(@AdminLoginUser Integer userId,
+    public Object queryList(@AdminLoginUser Integer adminUserId,
                             @RequestParam(defaultValue = "1") Integer page,
                             @RequestParam(defaultValue = "10") Integer limit,
                             String username) {
-        return adminAdminService.doQueryList(userId, page, limit, username);
+        return adminAdminService.doQueryList(adminUserId, page, limit, username);
+    }
+
+
+    @PostMapping("/delete")
+    public Object deleteInfo(@AdminLoginUser Integer adminUserId,
+                             @RequestBody Admin admin) {
+        return adminAdminService.doDeleteInfo(adminUserId, admin);
+    }
+
+
+    @PostMapping("/update")
+    public Object updateInfo(@AdminLoginUser Integer adminUserId,
+                             @RequestBody AdminUpdateReq admin) {
+        return adminAdminService.doUpdateInfo(adminUserId, admin);
     }
 }

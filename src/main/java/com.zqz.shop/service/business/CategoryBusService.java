@@ -8,6 +8,7 @@ import com.zqz.shop.mapper.CategoryMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 import static com.zqz.shop.entity.table.CategoryTableDef.CATEGORY;
@@ -73,5 +74,11 @@ public class CategoryBusService {
         wrapper.and(CATEGORY.DELETED.eq(false))
                 .orderBy(CATEGORY.ADD_TIME.desc());
         return categoryMapper.paginateWithRelations(page, limit, wrapper);
+    }
+
+    public int add(Category category) {
+        category.setAddTime(new Date());
+        category.setUpdateTime(new Date());
+        return categoryMapper.insertSelective(category);
     }
 }

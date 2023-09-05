@@ -1,5 +1,7 @@
 package com.zqz.shop.service;
 
+import com.zqz.shop.entity.Category;
+
 /**
  * @Author: ZQZ
  * @Description:
@@ -11,4 +13,5 @@ public interface AdminCategoryService {
 
     Object doCategoryL1(Integer adminUserId);
 
+    Object doCreateInfo(Integer adminUserId, Category category);
 }

@@ -1,5 +1,7 @@
 package com.zqz.shop.service;
 
+import com.zqz.shop.entity.Role;
+
 /**
  * @Author: ZQZ
  * @Description:
@@ -10,4 +12,10 @@ public interface AdminRoleService {
     Object doOptions(Integer adminUserId);
 
     Object doQueryList(Integer adminUserId, Integer page, Integer limit, String roleName);
+
+    Object doCreateInfo(Integer adminUserId, Role role);
+
+    Object doDelete(Integer adminUserId, Role role);
+
+    Object doUpdateInfo(Integer adminUserId, Role role);
 }

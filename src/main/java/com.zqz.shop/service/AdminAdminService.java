@@ -1,5 +1,8 @@
 package com.zqz.shop.service;
 
+import com.zqz.shop.bean.admin.AdminUpdateReq;
+import com.zqz.shop.entity.Admin;
+
 /**
  * @Author: ZQZ
  * @Description:
@@ -7,5 +10,9 @@ package com.zqz.shop.service;
  * @Date: Created in 14:21 2023-8-31
  */
 public interface AdminAdminService {
-    Object doQueryList(Integer userId, Integer page, Integer limit, String username);
+    Object doQueryList(Integer adminUserId, Integer page, Integer limit, String username);
+
+    Object doDeleteInfo(Integer adminUserId, Admin admin);
+
+    Object doUpdateInfo(Integer adminUserId, AdminUpdateReq admin);
 }

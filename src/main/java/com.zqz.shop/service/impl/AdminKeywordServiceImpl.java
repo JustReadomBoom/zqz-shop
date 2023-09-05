@@ -1,6 +1,7 @@
 package com.zqz.shop.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.entity.SysKeyword;
 import com.zqz.shop.service.AdminKeywordService;
@@ -35,5 +36,55 @@ public class AdminKeywordServiceImpl implements AdminKeywordService {
         data.put("total", keywordPage.getTotalRow());
         data.put("items", keywordPage.getRecords());
         return ResponseUtil.ok(data);
+    }
+
+    @Override
+    public Object doDelete(Integer adminUserId, SysKeyword keyword) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        Integer id = keyword.getId();
+        if (ObjectUtil.isEmpty(id)) {
+            return ResponseUtil.badArgument();
+        }
+        int delete = keywordBusService.logicalDeleteById(id);
+        if (delete <= 0) {
+            return ResponseUtil.updatedDataFailed();
+        }
+        return ResponseUtil.ok();
+    }
+
+    @Override
+    public Object doUpdateInfo(Integer adminUserId, SysKeyword keyword) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+
+        String kw = keyword.getKeyword();
+        if (StrUtil.isBlank(kw)) {
+            return ResponseUtil.badArgument();
+        }
+
+        int update = keywordBusService.updateById(keyword);
+        if (update <= 0) {
+            return ResponseUtil.updatedDataFailed();
+        }
+        return ResponseUtil.ok();
+    }
+
+    @Override
+    public Object doCreateInfo(Integer adminUserId, SysKeyword keyword) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        String kw = keyword.getKeyword();
+        if (StrUtil.isBlank(kw)) {
+            return ResponseUtil.badArgument();
+        }
+        int add = keywordBusService.add(keyword);
+        if (add <= 0) {
+            return ResponseUtil.updatedDataFailed();
+        }
+        return ResponseUtil.ok();
     }
 }

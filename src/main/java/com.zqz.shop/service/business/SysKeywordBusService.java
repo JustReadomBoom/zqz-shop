@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
+import java.util.Date;
 import java.util.List;
 
 import static com.zqz.shop.entity.table.SysKeywordTableDef.SYS_KEYWORD;
@@ -52,5 +53,19 @@ public class SysKeywordBusService {
         wrapper.and(SYS_KEYWORD.DELETED.eq(false))
                 .orderBy(SYS_KEYWORD.ADD_TIME.desc());
         return keywordMapper.paginateWithRelations(page, limit, wrapper);
+    }
+
+    public int logicalDeleteById(Integer id) {
+        return keywordMapper.logicalDeleteById(id);
+    }
+
+    public int updateById(SysKeyword keyword) {
+        keyword.setUpdateTime(new Date());
+        return keywordMapper.update(keyword);
+    }
+
+    public int add(SysKeyword keyword) {
+        keyword.setAddTime(new Date());
+        return keywordMapper.insertSelective(keyword);
     }
 }

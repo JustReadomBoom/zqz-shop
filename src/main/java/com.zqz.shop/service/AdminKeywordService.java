@@ -1,5 +1,7 @@
 package com.zqz.shop.service;
 
+import com.zqz.shop.entity.SysKeyword;
+
 /**
  * @Author: ZQZ
  * @Description:
@@ -8,4 +10,10 @@ package com.zqz.shop.service;
  */
 public interface AdminKeywordService {
     Object doQueryList(Integer adminUserId, Integer page, Integer limit, String keyword, String url);
+
+    Object doDelete(Integer adminUserId, SysKeyword keyword);
+
+    Object doUpdateInfo(Integer adminUserId, SysKeyword keyword);
+
+    Object doCreateInfo(Integer adminUserId, SysKeyword keyword);
 }
