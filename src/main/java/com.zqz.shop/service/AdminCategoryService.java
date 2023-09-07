@@ -14,4 +14,8 @@ public interface AdminCategoryService {
     Object doCategoryL1(Integer adminUserId);
 
     Object doCreateInfo(Integer adminUserId, Category category);
+
+    Object doDeleteInfo(Integer adminUserId, Category category);
+
+    Object doUpdateInfo(Integer adminUserId, Category category);
 }

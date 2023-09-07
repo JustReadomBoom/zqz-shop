@@ -45,4 +45,8 @@ public class OrderGoodsBusService {
                 .and(ORDER_GOODS.DELETED.eq(false));
         return orderGoodsMapper.selectCountByQuery(wrapper) != 0;
     }
+
+    public int deleteByOrderId(Integer orderId) {
+        return orderGoodsMapper.logicalDeleteByOrderId(orderId);
+    }
 }

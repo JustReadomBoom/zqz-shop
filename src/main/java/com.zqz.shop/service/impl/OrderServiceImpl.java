@@ -409,6 +409,9 @@ public class OrderServiceImpl implements OrderService {
             return ResponseUtil.fail(ResponseCode.ORDER_DEL_OPERATION);
         }
         orderBusService.deleteById(orderId);
+
+        //删除订单商品
+        orderGoodsBusService.deleteByOrderId(orderId);
         return ResponseUtil.ok();
     }
 

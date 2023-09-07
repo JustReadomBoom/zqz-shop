@@ -81,4 +81,13 @@ public class CategoryBusService {
         category.setUpdateTime(new Date());
         return categoryMapper.insertSelective(category);
     }
+
+    public int logicalDeleteById(Integer id) {
+        return categoryMapper.logicalDeleteById(id);
+    }
+
+    public int updateById(Category category) {
+        category.setUpdateTime(new Date());
+        return categoryMapper.update(category);
+    }
 }

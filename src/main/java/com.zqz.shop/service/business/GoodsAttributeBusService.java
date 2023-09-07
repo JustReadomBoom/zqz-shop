@@ -6,6 +6,7 @@ import com.zqz.shop.mapper.GoodsAttributeMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 import static com.zqz.shop.entity.table.GoodsAttributeTableDef.GOODS_ATTRIBUTE;
@@ -39,6 +40,8 @@ public class GoodsAttributeBusService {
     }
 
     public int add(GoodsAttribute attribute) {
+        attribute.setAddTime(new Date());
+        attribute.setUpdateTime(new Date());
         return goodsAttributeMapper.insertSelective(attribute);
     }
 }

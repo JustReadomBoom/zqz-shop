@@ -39,4 +39,18 @@ public class AdminCategoryController {
                              @RequestBody Category category) {
         return adminCategoryService.doCreateInfo(adminUserId, category);
     }
+
+
+    @PostMapping("/delete")
+    public Object deleteInfo(@AdminLoginUser Integer adminUserId,
+                             @RequestBody Category category) {
+        return adminCategoryService.doDeleteInfo(adminUserId, category);
+    }
+
+
+    @PostMapping("/update")
+    public Object updateInfo(@AdminLoginUser Integer adminUserId,
+                             @RequestBody Category category) {
+        return adminCategoryService.doUpdateInfo(adminUserId, category);
+    }
 }

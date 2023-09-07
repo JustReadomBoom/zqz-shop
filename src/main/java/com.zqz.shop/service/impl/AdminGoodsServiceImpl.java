@@ -291,7 +291,7 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
         List<GoodsSpecificationUpdateVo> specifications = req.getSpecifications();
 
         String name = goods.getName();
-        Integer goodsId = goods.getId();
+
         boolean goodsExist = goodsBusService.checkExistByName(name);
         if (goodsExist) {
             return ResponseUtil.fail(AdminResponseCode.GOODS_NAME_EXIST);
@@ -304,6 +304,8 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
         if (add <= 0) {
             throw new ShopException("商品上架失败!");
         }
+
+        Integer goodsId = newGoods.getId();
 
         for (GoodsSpecificationUpdateVo specification : specifications) {
             GoodsSpecification newSpec = new GoodsSpecification();

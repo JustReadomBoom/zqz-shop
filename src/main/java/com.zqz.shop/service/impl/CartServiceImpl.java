@@ -93,6 +93,7 @@ public class CartServiceImpl implements CartService {
             cart.setUserId(userId);
             cart.setAddTime(new Date());
             cart.setChecked(true);
+            cart.setDeleted(false);
             cartBusService.add(cart);
         } else {
             //取得规格的信息,判断规格库存

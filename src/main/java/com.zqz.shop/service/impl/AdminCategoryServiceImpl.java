@@ -81,9 +81,61 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
 
         int add = categoryBusService.add(category);
-        if(add <= 0){
+        if (add <= 0) {
             return ResponseUtil.updatedDataFailed();
         }
         return ResponseUtil.ok();
+    }
+
+    @Override
+    public Object doDeleteInfo(Integer adminUserId, Category category) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        Integer id = category.getId();
+        if (ObjectUtil.isEmpty(id)) {
+            return ResponseUtil.badArgument();
+        }
+        int delete = categoryBusService.logicalDeleteById(id);
+        if (delete <= 0) {
+            return ResponseUtil.updatedDataFailed();
+        }
+        return ResponseUtil.ok();
+    }
+
+    @Override
+    public Object doUpdateInfo(Integer adminUserId, Category category) {
+        if (ObjectUtil.isEmpty(adminUserId)) {
+            return ResponseUtil.unlogin();
+        }
+        if (ObjectUtil.isNotEmpty(validate(category))) {
+            return ResponseUtil.badArgument();
+        }
+        int update = categoryBusService.updateById(category);
+        if (update <= 0) {
+            return ResponseUtil.updatedDataFailed();
+        }
+        return ResponseUtil.ok();
+    }
+
+    private Object validate(Category category) {
+        String name = category.getName();
+        if (StrUtil.isBlank(name)) {
+            return ResponseUtil.badArgument();
+        }
+
+        String level = category.getLevel();
+        if (StrUtil.isBlank(level)) {
+            return ResponseUtil.badArgument();
+        }
+        if (!level.equals("L1") && !level.equals("L2")) {
+            return ResponseUtil.badArgumentValue();
+        }
+
+        Integer pid = category.getPid();
+        if (level.equals("L2") && ObjectUtil.isEmpty(pid)) {
+            return ResponseUtil.badArgument();
+        }
+        return null;
     }
 }
