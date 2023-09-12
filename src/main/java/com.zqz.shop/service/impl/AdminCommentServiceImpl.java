@@ -3,6 +3,7 @@ package com.zqz.shop.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
 import com.zqz.shop.entity.Comment;
 import com.zqz.shop.enums.AdminResponseCode;
 import com.zqz.shop.service.AdminCommentService;
@@ -37,14 +38,14 @@ public class AdminCommentServiceImpl implements AdminCommentService {
         if (ObjectUtil.isEmpty(adminUserId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> data = new HashMap<>(2);
+        PageQueryResp<Comment> queryResp = new PageQueryResp<>();
         List<Integer> brandIds = null;
         if (adminGoodsService.isBrandManager(adminUserId)) {
             brandIds = adminGoodsService.getBrandIds(adminUserId);
             if (CollectionUtil.isEmpty(brandIds)) {
-                data.put("total", 0L);
-                data.put("items", null);
-                return ResponseUtil.ok(data);
+                queryResp.setTotal(0L);
+                queryResp.setItems(null);
+                return ResponseUtil.ok(queryResp);
             }
         }
         Page<Comment> commentPage;
@@ -59,9 +60,9 @@ public class AdminCommentServiceImpl implements AdminCommentService {
             commentList = commentPage.getRecords();
             total = commentPage.getTotalRow();
         }
-        data.put("total", total);
-        data.put("items", commentList);
-        return ResponseUtil.ok(data);
+        queryResp.setTotal(total);
+        queryResp.setItems(commentList);
+        return ResponseUtil.ok(queryResp);
     }
 
     @Override

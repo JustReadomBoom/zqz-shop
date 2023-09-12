@@ -1,7 +1,7 @@
 package com.zqz.shop.controller.admin;
 
 import com.zqz.shop.annotation.AdminLoginUser;
-import com.zqz.shop.bean.admin.AdminUpdateReq;
+import com.zqz.shop.bean.admin.req.AdminUpdateReq;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.service.AdminAdminService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,10 @@ package com.zqz.shop.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
+import com.zqz.shop.bean.admin.resp.ValueLabelResp;
 import com.zqz.shop.entity.Category;
+import com.zqz.shop.enums.CategoryLevelEnum;
 import com.zqz.shop.service.AdminCategoryService;
 import com.zqz.shop.service.business.CategoryBusService;
 import com.zqz.shop.utils.ResponseUtil;
@@ -34,11 +37,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         if (ObjectUtil.isEmpty(adminUserId)) {
             return ResponseUtil.unlogin();
         }
+        PageQueryResp<Category> queryResp = new PageQueryResp<>();
         Page<Category> categoryPage = categoryBusService.queryPage(page, limit, id, name);
-        Map<String, Object> data = new HashMap<>();
-        data.put("total", categoryPage.getTotalRow());
-        data.put("items", categoryPage.getRecords());
-        return ResponseUtil.ok(data);
+        queryResp.setTotal(categoryPage.getTotalRow());
+        queryResp.setItems(categoryPage.getRecords());
+        return ResponseUtil.ok(queryResp);
     }
 
     @Override
@@ -47,12 +50,12 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             return ResponseUtil.unlogin();
         }
         List<Category> categoryList = categoryBusService.queryL1();
-        List<Map<String, Object>> data = new ArrayList<>(categoryList.size());
+        List<ValueLabelResp> data = new ArrayList<>(categoryList.size());
         for (Category category : categoryList) {
-            Map<String, Object> d = new HashMap<>(2);
-            d.put("value", category.getId());
-            d.put("label", category.getName());
-            data.add(d);
+            ValueLabelResp labelResp = new ValueLabelResp();
+            labelResp.setValue(category.getId());
+            labelResp.setLabel(category.getName());
+            data.add(labelResp);
         }
         return ResponseUtil.ok(data);
     }
@@ -71,12 +74,12 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         if (StrUtil.isBlank(level)) {
             return ResponseUtil.badArgument();
         }
-        if (!level.equals("L1") && !level.equals("L2")) {
+        if (ObjectUtil.isEmpty(CategoryLevelEnum.match(level))) {
             return ResponseUtil.badArgument();
         }
 
         Integer pid = category.getPid();
-        if (level.equals("L2") && (pid == null)) {
+        if (CategoryLevelEnum.L2.getLevel().equals(level) && (pid == null)) {
             return ResponseUtil.badArgument();
         }
 
@@ -128,12 +131,12 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         if (StrUtil.isBlank(level)) {
             return ResponseUtil.badArgument();
         }
-        if (!level.equals("L1") && !level.equals("L2")) {
+        if (ObjectUtil.isEmpty(CategoryLevelEnum.match(level))) {
             return ResponseUtil.badArgumentValue();
         }
 
         Integer pid = category.getPid();
-        if (level.equals("L2") && ObjectUtil.isEmpty(pid)) {
+        if (CategoryLevelEnum.L2.getLevel().equals(level) && ObjectUtil.isEmpty(pid)) {
             return ResponseUtil.badArgument();
         }
         return null;

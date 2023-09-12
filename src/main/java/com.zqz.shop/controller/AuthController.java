@@ -1,7 +1,7 @@
 package com.zqz.shop.controller;
 
 import com.zqz.shop.annotation.LoginUser;
-import com.zqz.shop.bean.BindPhoneReq;
+import com.zqz.shop.bean.req.BindPhoneReq;
 import com.zqz.shop.bean.WxLoginInfo;
 import com.zqz.shop.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;

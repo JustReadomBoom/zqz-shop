@@ -5,10 +5,11 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.zqz.shop.bean.UserToken;
-import com.zqz.shop.bean.admin.AdminLoginReq;
+import com.zqz.shop.bean.admin.req.AdminLoginReq;
+import com.zqz.shop.bean.admin.resp.GetImgCodeResp;
+import com.zqz.shop.bean.admin.resp.GetUserInfoResp;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.enums.AdminResponseCode;
 import com.zqz.shop.exception.ShopException;
@@ -26,9 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -89,16 +88,16 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             log.error("获取验证码失败，{}", AdminResponseCode.AUTH_CAPTCHA_FREQUENCY.getDesc());
             return ResponseUtil.fail(AdminResponseCode.AUTH_CAPTCHA_FREQUENCY);
         }
+        GetImgCodeResp codeResp = new GetImgCodeResp();
         // 生成图片
         ByteArrayOutputStream stream = null;
         try {
             int w = 111, h = 36;
             stream = new ByteArrayOutputStream();
             VerifyCodeUtil.outputImage(w, h, stream, verifyCode);
-            Map<String, Object> data = new HashMap<>(2);
-            data.put("uuid", uuid);
-            data.put("img", Base64.encode(stream.toByteArray()));
-            return ResponseUtil.ok(data);
+            codeResp.setUuid(uuid);
+            codeResp.setImg(Base64.encode(stream.toByteArray()));
+            return ResponseUtil.ok(codeResp);
         } catch (Exception e) {
             log.error("获取验证码失败，{}", e.getMessage());
             e.printStackTrace();
@@ -116,20 +115,21 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     public Object doInfo(Integer userId) {
-        Map<String, Object> data = new HashMap<>(4);
         Admin admin = adminBusService.queryByUserId(userId);
         if (ObjectUtil.isEmpty(admin)) {
             log.error("获取用户失败:用户{}不存在", userId);
             return ResponseUtil.dataEmpty();
         }
-        data.put("name", admin.getUsername());
-        data.put("avatar", admin.getAvatar());
+        GetUserInfoResp infoResp = new GetUserInfoResp();
+        infoResp.setName(admin.getUsername());
+        infoResp.setAvatar(admin.getAvatar());
+
         String roleIdsStr = admin.getRoleIds();
         List<Integer> roleIds = JSONUtil.parseArray(roleIdsStr).toList(Integer.class);
         Set<String> roleNames = roleBusService.queryByIds(roleIds);
-        data.put("roles", roleNames);
+        infoResp.setRoles(roleNames);
         Set<String> permissions = permissionBusService.queryByRoles(roleIds);
-        data.put("perms", permissions);
-        return ResponseUtil.ok(data);
+        infoResp.setPerms(permissions);
+        return ResponseUtil.ok(infoResp);
     }
 }

@@ -3,6 +3,7 @@ package com.zqz.shop.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
 import com.zqz.shop.entity.UserAddress;
 import com.zqz.shop.service.AdminAddressService;
 import com.zqz.shop.service.business.UserAddressBusService;
@@ -34,22 +35,22 @@ public class AdminAddressServiceImpl implements AdminAddressService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> data = new HashMap<>(2);
+        PageQueryResp<Map<String, Object>> queryResp = new PageQueryResp<>();
         Page<UserAddress> addressPage = addressBusService.queryPage(page, limit, queryUserId, name);
         List<UserAddress> userAddressList = addressPage.getRecords();
         List<Map<String, Object>> addressVoList = new ArrayList<>(userAddressList.size());
         if (CollectionUtil.isEmpty(userAddressList)) {
-            data.put("total", 0);
-            data.put("items", addressVoList);
-            return ResponseUtil.ok(data);
+            queryResp.setTotal(0L);
+            queryResp.setItems(addressVoList);
+            return ResponseUtil.ok(queryResp);
         }
 
         for (UserAddress userAddress : userAddressList) {
             Map<String, Object> addressVo = addressBusService.toVo(userAddress);
             addressVoList.add(addressVo);
         }
-        data.put("total", addressPage.getTotalRow());
-        data.put("items", addressVoList);
-        return ResponseUtil.ok(data);
+        queryResp.setTotal(addressPage.getTotalRow());
+        queryResp.setItems(addressVoList);
+        return ResponseUtil.ok(queryResp);
     }
 }

@@ -3,7 +3,6 @@ package com.zqz.shop.service.business;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.zqz.shop.bean.admin.AdminUpdateReq;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.mapper.AdminMapper;
 import org.springframework.stereotype.Service;

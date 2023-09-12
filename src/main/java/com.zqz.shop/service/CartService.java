@@ -1,8 +1,7 @@
 package com.zqz.shop.service;
 
-import com.zqz.shop.bean.AddCartProductReq;
-import com.zqz.shop.bean.UpdateCartReq;
-import com.zqz.shop.entity.Cart;
+import com.zqz.shop.bean.req.AddCartProductReq;
+import com.zqz.shop.bean.req.UpdateCartReq;
 
 /**
  * @Author: ZQZ

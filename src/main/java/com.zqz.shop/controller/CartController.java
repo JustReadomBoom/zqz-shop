@@ -1,9 +1,8 @@
 package com.zqz.shop.controller;
 
 import com.zqz.shop.annotation.LoginUser;
-import com.zqz.shop.bean.AddCartProductReq;
-import com.zqz.shop.bean.UpdateCartReq;
-import com.zqz.shop.entity.Cart;
+import com.zqz.shop.bean.req.AddCartProductReq;
+import com.zqz.shop.bean.req.UpdateCartReq;
 import com.zqz.shop.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

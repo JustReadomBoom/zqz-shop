@@ -1,10 +1,10 @@
 package com.zqz.shop.controller;
 
 import com.zqz.shop.annotation.LoginUser;
-import com.zqz.shop.bean.CancelOrderReq;
-import com.zqz.shop.bean.OrderDeleteReq;
-import com.zqz.shop.bean.OrderPrepayReq;
-import com.zqz.shop.bean.OrderSubmitReq;
+import com.zqz.shop.bean.req.CancelOrderReq;
+import com.zqz.shop.bean.req.OrderDeleteReq;
+import com.zqz.shop.bean.req.OrderPrepayReq;
+import com.zqz.shop.bean.req.OrderSubmitReq;
 import com.zqz.shop.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

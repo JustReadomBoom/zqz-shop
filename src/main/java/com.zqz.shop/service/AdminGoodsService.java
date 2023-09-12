@@ -1,7 +1,7 @@
 package com.zqz.shop.service;
 
 import com.zqz.shop.bean.admin.GoodsCreateReq;
-import com.zqz.shop.bean.admin.GoodsUpdateReq;
+import com.zqz.shop.bean.admin.req.GoodsUpdateReq;
 import com.zqz.shop.entity.Goods;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.zqz.shop.service;
 
-import com.zqz.shop.bean.BindPhoneReq;
+import com.zqz.shop.bean.req.BindPhoneReq;
 import com.zqz.shop.bean.WxLoginInfo;
 
 import javax.servlet.http.HttpServletRequest;

@@ -1,5 +1,8 @@
-package com.zqz.shop.bean.admin;
+package com.zqz.shop.bean.admin.req;
 
+import com.zqz.shop.bean.admin.GoodsAttributeUpdateVo;
+import com.zqz.shop.bean.admin.GoodsProductUpdateVo;
+import com.zqz.shop.bean.admin.GoodsSpecificationUpdateVo;
 import com.zqz.shop.entity.Goods;
 import lombok.Data;
 

@@ -2,6 +2,8 @@ package com.zqz.shop.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.zqz.shop.bean.admin.*;
+import com.zqz.shop.bean.admin.resp.DashboardCharResp;
+import com.zqz.shop.bean.admin.resp.DashboardInfoResp;
 import com.zqz.shop.service.AdminDashboardService;
 import com.zqz.shop.service.business.GoodsBusService;
 import com.zqz.shop.service.business.GoodsProductBusService;
@@ -39,7 +41,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> data = new HashMap<>(3);
+        DashboardCharResp charResp = new DashboardCharResp();
 
         //近期用户，订单增长量查询
         UserOrderCntVo cntVo = new UserOrderCntVo();
@@ -60,10 +62,10 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
 
         CategorySellVo categorySell = fetchCategorySell(categorySellStatis);
 
-        data.put("userOrderCnt", cntVo);
-        data.put("orderAmts", orderAmts);
-        data.put("categorySell", categorySell);
-        return ResponseUtil.ok(data);
+        charResp.setUserOrderCnt(cntVo);
+        charResp.setOrderAmts(orderAmts);
+        charResp.setCategorySell(categorySell);
+        return ResponseUtil.ok(charResp);
     }
 
     @Override
@@ -71,18 +73,18 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Integer> data = new HashMap<>(4);
+        DashboardInfoResp infoResp = new DashboardInfoResp();
 
         Integer userCount = userBusService.queryCount();
         Integer goodsCount = goodsBusService.queryCount();
         Integer productCount = goodsProductBusService.queryCount();
         Integer orderCount = orderBusService.queryCount();
 
-        data.put("userTotal", userCount);
-        data.put("goodsTotal", goodsCount);
-        data.put("productTotal", productCount);
-        data.put("orderTotal", orderCount);
-        return ResponseUtil.ok(data);
+        infoResp.setUserTotal(userCount);
+        infoResp.setGoodsTotal(goodsCount);
+        infoResp.setProductTotal(productCount);
+        infoResp.setOrderTotal(orderCount);
+        return ResponseUtil.ok(infoResp);
     }
 
 

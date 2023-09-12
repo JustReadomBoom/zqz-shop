@@ -7,10 +7,12 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.zqz.shop.bean.BindPhoneReq;
+import com.zqz.shop.bean.req.BindPhoneReq;
 import com.zqz.shop.bean.UserInfo;
 import com.zqz.shop.bean.UserToken;
 import com.zqz.shop.bean.WxLoginInfo;
+import com.zqz.shop.bean.resp.BindPhoneResp;
+import com.zqz.shop.bean.resp.WxLoginResp;
 import com.zqz.shop.entity.User;
 import com.zqz.shop.enums.UserTypeEnum;
 import com.zqz.shop.exception.ShopException;
@@ -25,8 +27,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -49,6 +49,8 @@ public class AuthServiceImpl implements AuthService {
         try {
             String code = wxLoginInfo.getCode();
             UserInfo userInfo = wxLoginInfo.getUserInfo();
+
+            WxLoginResp loginResp = new WxLoginResp();
 
             Integer shareUserId = wxLoginInfo.getShareUserId();
             WxMaJscode2SessionResult result = this.wxMaService.getUserService().getSessionInfo(code);
@@ -90,9 +92,10 @@ public class AuthServiceImpl implements AuthService {
 
             UserToken userToken = UserTokenManager.generateToken(user.getId());
             userToken.setSessionKey(sessionKey);
-            Map<Object, Object> resultMap = new HashMap<>(3);
-            resultMap.put("token", userToken.getToken());
-            resultMap.put("tokenExpire", userToken.getExpireTime().toString());
+
+            loginResp.setToken(userToken.getToken());
+            loginResp.setTokenExpire(userToken.getExpireTime().toString());
+
             userInfo.setUserId(user.getId());
             if (StrUtil.isNotBlank(user.getMobile())) {
                 userInfo.setPhone(user.getMobile());
@@ -103,8 +106,8 @@ public class AuthServiceImpl implements AuthService {
             userInfo.setStatus(user.getStatus());
             userInfo.setUserLevel(user.getUserLevel());
             userInfo.setUserLevelDesc(UserTypeEnum.getInstance(user.getUserLevel()).getDesc());
-            resultMap.put("userInfo", userInfo);
-            return ResponseUtil.ok(resultMap);
+            loginResp.setUserInfo(userInfo);
+            return ResponseUtil.ok(loginResp);
         } catch (Exception e) {
             throw new ShopException(String.format("微信登录失败:%s", e.getMessage()));
         }
@@ -115,6 +118,9 @@ public class AuthServiceImpl implements AuthService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
+
+        BindPhoneResp bindPhoneResp = new BindPhoneResp();
+
         String encryptedData = req.getEncryptedData();
         String iv = req.getIv();
         String sessionKey = UserTokenManager.getSessionKey(userId);
@@ -135,9 +141,8 @@ public class AuthServiceImpl implements AuthService {
         if (update <= 0) {
             return ResponseUtil.fail();
         }
-        Map<String, Object> result = new HashMap<>(1);
-        result.put("phone", phoneNumber);
-        return ResponseUtil.ok(result);
+        bindPhoneResp.setPhone(phoneNumber);
+        return ResponseUtil.ok(bindPhoneResp);
     }
 
 

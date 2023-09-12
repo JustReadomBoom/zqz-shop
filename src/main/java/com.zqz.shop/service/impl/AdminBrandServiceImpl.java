@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.bean.admin.BrandVo;
 import com.zqz.shop.bean.admin.CatVo;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.entity.Brand;
 import com.zqz.shop.entity.Category;
@@ -45,8 +46,8 @@ public class AdminBrandServiceImpl implements AdminBrandService {
         if (ObjectUtil.isEmpty(adminUserId)) {
             return ResponseUtil.unlogin();
         }
+        PageQueryResp<BrandVo> queryResp = new PageQueryResp<>();
         Page<Brand> brandPage = brandBusService.queryPage(page, limit, id, name);
-        Map<String, Object> data = new HashMap<>(2);
 
         long total = brandPage.getTotalRow();
         List<Brand> brandList = brandPage.getRecords();
@@ -66,13 +67,13 @@ public class AdminBrandServiceImpl implements AdminBrandService {
                 }
                 brandVoList.add(brandVo);
             }
-            data.put("total", total);
-            data.put("items", brandVoList);
+            queryResp.setTotal(total);
+            queryResp.setItems(brandVoList);
         } else {
-            data.put("total", 0);
-            data.put("items", brandVoList);
+            queryResp.setTotal(0L);
+            queryResp.setItems(brandVoList);
         }
-        return ResponseUtil.ok(data);
+        return ResponseUtil.ok(queryResp);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.zqz.shop.bean.admin;
+package com.zqz.shop.bean.admin.req;
 
 import lombok.Data;
 

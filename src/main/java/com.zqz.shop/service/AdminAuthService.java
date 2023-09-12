@@ -1,6 +1,6 @@
 package com.zqz.shop.service;
 
-import com.zqz.shop.bean.admin.AdminLoginReq;
+import com.zqz.shop.bean.admin.req.AdminLoginReq;
 
 /**
  * @Author: ZQZ

@@ -2,7 +2,7 @@ package com.zqz.shop.controller.admin;
 
 import com.zqz.shop.annotation.AdminLoginUser;
 import com.zqz.shop.bean.admin.GoodsCreateReq;
-import com.zqz.shop.bean.admin.GoodsUpdateReq;
+import com.zqz.shop.bean.admin.req.GoodsUpdateReq;
 import com.zqz.shop.entity.Goods;
 import com.zqz.shop.service.AdminGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;

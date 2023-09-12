@@ -1,9 +1,9 @@
 package com.zqz.shop.service;
 
-import com.zqz.shop.bean.CancelOrderReq;
-import com.zqz.shop.bean.OrderDeleteReq;
-import com.zqz.shop.bean.OrderPrepayReq;
-import com.zqz.shop.bean.OrderSubmitReq;
+import com.zqz.shop.bean.req.CancelOrderReq;
+import com.zqz.shop.bean.req.OrderDeleteReq;
+import com.zqz.shop.bean.req.OrderPrepayReq;
+import com.zqz.shop.bean.req.OrderSubmitReq;
 
 import javax.servlet.http.HttpServletRequest;
 

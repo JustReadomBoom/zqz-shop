@@ -1,6 +1,6 @@
 package com.zqz.shop.service;
 
-import com.zqz.shop.bean.admin.AdminUpdateReq;
+import com.zqz.shop.bean.admin.req.AdminUpdateReq;
 import com.zqz.shop.entity.Admin;
 
 /**

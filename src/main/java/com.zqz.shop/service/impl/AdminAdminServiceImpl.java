@@ -5,7 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.paginate.Page;
-import com.zqz.shop.bean.admin.AdminUpdateReq;
+import com.zqz.shop.bean.admin.req.AdminUpdateReq;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.enums.AdminResponseCode;
 import com.zqz.shop.service.AdminAdminService;
@@ -16,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -37,10 +36,10 @@ public class AdminAdminServiceImpl implements AdminAdminService {
             return ResponseUtil.unlogin();
         }
         Page<Admin> adminPage = adminBusService.queryPage(page, limit, username);
-        Map<String, Object> data = new HashMap<>(2);
-        data.put("total", adminPage.getTotalRow());
-        data.put("items", adminPage.getRecords());
-        return ResponseUtil.ok(data);
+        PageQueryResp<Admin> queryResp = new PageQueryResp<>();
+        queryResp.setTotal(adminPage.getTotalRow());
+        queryResp.setItems(adminPage.getRecords());
+        return ResponseUtil.ok(queryResp);
     }
 
     @Override

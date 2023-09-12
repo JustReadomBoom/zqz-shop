@@ -8,6 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.bean.GoodsProductVo;
 import com.zqz.shop.bean.admin.*;
+import com.zqz.shop.bean.admin.req.GoodsUpdateReq;
 import com.zqz.shop.entity.*;
 import com.zqz.shop.enums.AdminResponseCode;
 import com.zqz.shop.exception.ShopException;

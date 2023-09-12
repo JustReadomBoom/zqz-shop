@@ -1,7 +1,7 @@
 package com.zqz.shop.controller.admin;
 
 import com.zqz.shop.annotation.AdminLoginUser;
-import com.zqz.shop.bean.admin.AdminLoginReq;
+import com.zqz.shop.bean.admin.req.AdminLoginReq;
 import com.zqz.shop.service.AdminAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
