@@ -6,6 +6,9 @@ import cn.hutool.json.JSONUtil;
 import com.zqz.shop.bean.req.AddCartProductReq;
 import com.zqz.shop.bean.BrandCartGoods;
 import com.zqz.shop.bean.req.UpdateCartReq;
+import com.zqz.shop.bean.resp.CartCheckoutResp;
+import com.zqz.shop.bean.resp.CartIndexResp;
+import com.zqz.shop.bean.resp.CartTotalVo;
 import com.zqz.shop.entity.*;
 import com.zqz.shop.enums.ResponseCode;
 import com.zqz.shop.service.CartService;
@@ -115,8 +118,8 @@ public class CartServiceImpl implements CartService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> result = new HashMap<>(1);
-        Map<String, Object> cartTotal = new HashMap<>(4);
+        CartIndexResp indexResp = new CartIndexResp();
+        CartTotalVo totalVo = new CartTotalVo();
         List<Cart> cartList = cartBusService.queryByUserId(userId);
         if (CollectionUtil.isNotEmpty(cartList)) {
             Integer goodsCount = 0;
@@ -131,22 +134,22 @@ public class CartServiceImpl implements CartService {
                     checkedGoodsAmount = checkedGoodsAmount.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())).setScale(2, BigDecimal.ROUND_HALF_UP));
                 }
             }
-            cartTotal.put("goodsCount", goodsCount);
-            cartTotal.put("goodsAmount", goodsAmount);
-            cartTotal.put("checkedGoodsCount", checkedGoodsCount);
-            cartTotal.put("checkedGoodsAmount", checkedGoodsAmount);
-            result.put("cartTotal", cartTotal);
+            totalVo.setGoodsCount(goodsCount);
+            totalVo.setGoodsAmount(goodsAmount);
+            totalVo.setCheckedGoodsCount(checkedGoodsCount);
+            totalVo.setCheckedGoodsAmount(checkedGoodsAmount);
+            indexResp.setCartTotal(totalVo);
         }
         // 如果需要拆订单，则需要按店铺显示购物车商品
         if (SystemConfig.isMultiOrderModel()) {
-            result.put("isMultiOrderModel", 1);
-            List<BrandCartGoods> brandCartgoodsList = new ArrayList<>();
+            indexResp.setIsMultiOrderModel(1);
+            List<BrandCartGoods> brandCartGoodsList = new ArrayList<>();
             for (Cart cart : cartList) {
                 Integer brandId = cart.getBrandId();
                 boolean hasExist = false;
-                for (int i = 0; i < brandCartgoodsList.size(); i++) {
-                    if (brandCartgoodsList.get(i).getBrandId().intValue() == brandId.intValue()) {
-                        brandCartgoodsList.get(i).getCartList().add(cart);
+                for (int i = 0; i < brandCartGoodsList.size(); i++) {
+                    if (brandCartGoodsList.get(i).getBrandId().intValue() == brandId.intValue()) {
+                        brandCartGoodsList.get(i).getCartList().add(cart);
                         hasExist = true;
                         break;
                     }
@@ -158,15 +161,15 @@ public class CartServiceImpl implements CartService {
                     List<Cart> dtsCartList = new ArrayList<>();
                     dtsCartList.add(cart);
                     bandCartGoods.setCartList(dtsCartList);
-                    brandCartgoodsList.add(bandCartGoods);
+                    brandCartGoodsList.add(bandCartGoods);
                 }
             }
-            result.put("brandCartgoods", brandCartgoodsList);
+            indexResp.setBrandCartgoods(brandCartGoodsList);
         } else {
-            result.put("isMultiOrderModel", 0);
-            result.put("cartList", cartList);
+            indexResp.setIsMultiOrderModel(1);
+            indexResp.setCartList(cartList);
         }
-        return ResponseUtil.ok(result);
+        return ResponseUtil.ok(indexResp);
     }
 
     @Override
@@ -251,6 +254,7 @@ public class CartServiceImpl implements CartService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
+        CartCheckoutResp checkoutResp = new CartCheckoutResp();
         UserAddress checkedAddress;
         if (ObjectUtil.isEmpty(addressId) || addressId.equals(0)) {
             checkedAddress = addressBusService.queryDefault(userId);
@@ -285,7 +289,6 @@ public class CartServiceImpl implements CartService {
             checkedGoodsList.add(cart);
         }
 
-        Map<String, Object> data = new HashMap<>();
         //商品总价 （包含团购减免，即减免团购后的商品总价，多店铺需将所有商品相加）
         BigDecimal goodsTotalPrice = BigDecimal.ZERO;
         //总配送费 （单店铺模式一个，多店铺模式多个配送费的总和）
@@ -293,11 +296,11 @@ public class CartServiceImpl implements CartService {
 
         if (SystemConfig.isMultiOrderModel()) {
             // a.按入驻店铺归类checkout商品
-            List<BrandCartGoods> brandCartgoodsList = new ArrayList<>();
+            List<BrandCartGoods> brandCartGoodsList = new ArrayList<>();
             for (Cart cart : checkedGoodsList) {
                 Integer brandId = cart.getBrandId();
                 boolean hasExsit = false;
-                for (BrandCartGoods brandCartGoods : brandCartgoodsList) {
+                for (BrandCartGoods brandCartGoods : brandCartGoodsList) {
                     if (brandCartGoods.getBrandId().intValue() == brandId.intValue()) {
                         brandCartGoods.getCartList().add(cart);
                         hasExsit = true;
@@ -311,13 +314,13 @@ public class CartServiceImpl implements CartService {
                     List<Cart> dtsCartList = new ArrayList<>();
                     dtsCartList.add(cart);
                     bandCartGoods.setCartList(dtsCartList);
-                    brandCartgoodsList.add(bandCartGoods);
+                    brandCartGoodsList.add(bandCartGoods);
                 }
             }
 
             // b.核算每个店铺的各项价格指标
             List<BrandCartGoods> checkBrandGoodsList = new ArrayList<>();
-            for (BrandCartGoods bcg : brandCartgoodsList) {
+            for (BrandCartGoods bcg : brandCartGoodsList) {
                 List<Cart> bandCarts = bcg.getCartList();
                 BigDecimal bandGoodsTotalPrice = BigDecimal.ZERO;
                 BigDecimal bandFreightPrice = BigDecimal.ZERO;
@@ -340,11 +343,10 @@ public class CartServiceImpl implements CartService {
 
                 checkBrandGoodsList.add(bcg);
             }
-
-            data.put("isMultiOrderModel", 1);
-            data.put("goodsTotalPrice", goodsTotalPrice);
-            data.put("freightPrice", totalFreightPrice);
-            data.put("brandCartgoods", checkBrandGoodsList);
+            checkoutResp.setIsMultiOrderModel(1);
+            checkoutResp.setGoodsTotalPrice(goodsTotalPrice);
+            checkoutResp.setFreightPrice(totalFreightPrice);
+            checkoutResp.setBrandCartgoods(checkBrandGoodsList);
         } else {
             //不拆订单，则统一呈现
             for (Cart cart : checkedGoodsList) {
@@ -354,34 +356,34 @@ public class CartServiceImpl implements CartService {
             if (goodsTotalPrice.compareTo(SystemConfig.getFreightLimit()) < 0) {
                 totalFreightPrice = SystemConfig.getFreight();
             }
-            data.put("isMultiOrderModel", 0);
-            data.put("goodsTotalPrice", goodsTotalPrice);
-            data.put("freightPrice", totalFreightPrice);
-            data.put("checkedGoodsList", checkedGoodsList);
+            checkoutResp.setIsMultiOrderModel(0);
+            checkoutResp.setGoodsTotalPrice(goodsTotalPrice);
+            checkoutResp.setFreightPrice(totalFreightPrice);
+            checkoutResp.setCheckedGoodsList(checkedGoodsList);
         }
 
         int availableCouponLength = 0;
         BigDecimal couponPrice = BigDecimal.ZERO;
 
         // 用户积分减免
-        BigDecimal integralPrice = new BigDecimal(0.00);
+        BigDecimal integralPrice = BigDecimal.ZERO;
 
         BigDecimal orderTotalPrice = goodsTotalPrice.add(totalFreightPrice).subtract(couponPrice);
         BigDecimal actualPrice = orderTotalPrice.subtract(integralPrice);
 
         // 返回界面的通用数据
-        data.put("addressId", addressId);
-        data.put("checkedAddress", checkedAddress);
-        data.put("couponId", couponId);
-        data.put("availableCouponLength", availableCouponLength);
-        data.put("grouponRulesId", grouponRulesId);
+        checkoutResp.setAddressId(addressId);
+        checkoutResp.setCheckedAddress(checkedAddress);
+        checkoutResp.setCouponId(couponId);
+        checkoutResp.setAvailableCouponLength(availableCouponLength);
+        checkoutResp.setGrouponRulesId(grouponRulesId);
         // 单店铺，多店铺 一个总订单都只能用一张券
-        data.put("couponPrice", couponPrice);
+        checkoutResp.setCouponPrice(couponPrice);
         // 订单总价：goodsTotalPrice + totalFreightPrice - couponPrice
-        data.put("orderTotalPrice", orderTotalPrice);
+        checkoutResp.setOrderTotalPrice(orderTotalPrice);
         // 订单实际付款金额：orderTotalPrice - integralPrice
-        data.put("actualPrice", actualPrice);
-        return ResponseUtil.ok(data);
+        checkoutResp.setActualPrice(actualPrice);
+        return ResponseUtil.ok(checkoutResp);
     }
 
 

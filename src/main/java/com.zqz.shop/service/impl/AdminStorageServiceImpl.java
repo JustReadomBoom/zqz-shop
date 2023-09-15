@@ -3,6 +3,7 @@ package com.zqz.shop.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.zqz.shop.bean.admin.resp.CreateStorageResp;
 import com.zqz.shop.entity.Storage;
 import com.zqz.shop.service.AdminStorageService;
 import com.zqz.shop.service.business.FileService;
@@ -13,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -37,12 +35,12 @@ public class AdminStorageServiceImpl implements AdminStorageService {
         if (ObjectUtil.isEmpty(adminUserId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> data = new HashMap<>(1);
+        CreateStorageResp storageResp = new CreateStorageResp();
         try {
             String contentType = file.getContentType();
             String originalFilename = file.getOriginalFilename();
             String url = fileService.upload(file, originalFilename);
-            if (StrUtil.isNotBlank(url)) {
+            if (StrUtil.isNotBlank(url) && StrUtil.isNotBlank(originalFilename)) {
                 String key = generateKey(originalFilename);
                 Storage storage = new Storage();
                 storage.setName(originalFilename);
@@ -52,7 +50,7 @@ public class AdminStorageServiceImpl implements AdminStorageService {
                 storage.setKey(key);
                 storage.setUrl(url);
                 storageBusService.add(storage);
-                data.put("url", url);
+                storageResp.setUrl(url);
             } else {
                 return ResponseUtil.fileUploadError();
             }
@@ -60,7 +58,7 @@ public class AdminStorageServiceImpl implements AdminStorageService {
             log.error("文件上传失败:{}", e.getMessage());
             return ResponseUtil.fileUploadError();
         }
-        return ResponseUtil.ok(data);
+        return ResponseUtil.ok(storageResp);
 
     }
 

@@ -1,5 +1,6 @@
 package com.zqz.shop.controller;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.entity.Ad;
@@ -36,7 +37,18 @@ public class TestController {
         queryWrapper.select().where(AD.ENABLED.eq(1));
         List<Ad> ads = adMapper.selectListByQuery(queryWrapper);
         log.info("all ad = {}", JSONUtil.toJsonStr(ads));
+
         return JSONUtil.toJsonStr(ads);
+    }
+
+    public static void main(String[] args) {
+        // 获取当前月份的第一天
+        String firstDayOfMonth = DateUtil.beginOfMonth(DateUtil.lastMonth()).toString();
+        System.out.println("当前月份的第一天：" + firstDayOfMonth);
+
+        // 获取当前月份的最后一天
+        String lastDayOfMonth = DateUtil.endOfMonth(DateUtil.lastMonth()).toString();
+        System.out.println("当前月份的最后一天：" + lastDayOfMonth);
     }
 
 

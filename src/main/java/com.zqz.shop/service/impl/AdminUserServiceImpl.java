@@ -2,6 +2,7 @@ package com.zqz.shop.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
 import com.zqz.shop.entity.User;
 import com.zqz.shop.service.AdminUserService;
 import com.zqz.shop.service.business.UserBusService;
@@ -10,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -30,10 +29,10 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> data = new HashMap<>(2);
+        PageQueryResp<User> queryResp = new PageQueryResp<>();
         Page<User> userPage = userBusService.queryPage(username, mobile, page, limit);
-        data.put("total", userPage.getTotalRow());
-        data.put("items", userPage.getRecords());
-        return ResponseUtil.ok(data);
+        queryResp.setTotal(userPage.getTotalRow());
+        queryResp.setItems(userPage.getRecords());
+        return ResponseUtil.ok(queryResp);
     }
 }

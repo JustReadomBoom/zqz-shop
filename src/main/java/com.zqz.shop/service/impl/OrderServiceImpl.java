@@ -151,15 +151,15 @@ public class OrderServiceImpl implements OrderService {
             List<BrandCartGoods> brandCartGoodsList = new ArrayList<>();
             for (Cart cart : checkedGoodsList) {
                 Integer brandId = cart.getBrandId();
-                boolean hasExsist = false;
-                for (int i = 0; i < brandCartGoodsList.size(); i++) {
-                    if (brandCartGoodsList.get(i).getBrandId().intValue() == brandId.intValue()) {
-                        brandCartGoodsList.get(i).getCartList().add(cart);
-                        hasExsist = true;
+                boolean hasExist = false;
+                for (BrandCartGoods brandCartGoods : brandCartGoodsList) {
+                    if (brandCartGoods.getBrandId().intValue() == brandId.intValue()) {
+                        brandCartGoods.getCartList().add(cart);
+                        hasExist = true;
                         break;
                     }
                 }
-                if (!hasExsist) {
+                if (!hasExist) {
                     //还尚未加入，则新增一类
                     BrandCartGoods bandCartGoods = new BrandCartGoods();
                     bandCartGoods.setBrandId(brandId);
