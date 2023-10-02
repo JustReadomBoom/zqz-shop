@@ -5,6 +5,8 @@ import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import com.zqz.shop.bean.AddressDetailVo;
+import com.zqz.shop.bean.AddressVo;
 import com.zqz.shop.entity.Region;
 import com.zqz.shop.entity.UserAddress;
 import com.zqz.shop.service.UserAddressService;
@@ -41,23 +43,25 @@ public class UserAddressServiceImpl implements UserAddressService {
         if (CollectionUtil.isEmpty(addressList)) {
             return ResponseUtil.ok();
         }
-        List<Map<String, Object>> addressVoList = new ArrayList<>(addressList.size());
+        List<AddressVo> addressVoList = new ArrayList<>(addressList.size());
         List<Region> regionList = regionBusService.getRegions();
         if (CollectionUtil.isEmpty(regionList)) {
             return ResponseUtil.ok();
         }
         for (UserAddress address : addressList) {
-            Map<String, Object> addressVo = new HashMap<>(5);
-            addressVo.put("id", address.getId());
-            addressVo.put("name", address.getName());
-            addressVo.put("mobile", address.getMobile());
-            addressVo.put("isDefault", address.getIsDefault());
+            AddressVo addressVo = new AddressVo();
             String province = regionList.stream().filter(region -> region.getId().equals(address.getProvinceId())).findAny().map(Region::getName).orElse(null);
             String city = regionList.stream().filter(region -> region.getId().equals(address.getCityId())).findAny().map(Region::getName).orElse(null);
             String area = regionList.stream().filter(region -> region.getId().equals(address.getAreaId())).findAny().map(Region::getName).orElse(null);
             String addr = address.getAddress();
             String detailedAddress = province + city + area + " " + addr;
-            addressVo.put("detailedAddress", detailedAddress);
+
+            addressVo.setId(address.getId());
+            addressVo.setName(address.getName());
+            addressVo.setMobile(address.getMobile());
+            addressVo.setIsDefault(address.getIsDefault());
+            addressVo.setDetailedAddress(detailedAddress);
+
             addressVoList.add(addressVo);
         }
         return ResponseUtil.ok(addressVoList);
@@ -99,22 +103,24 @@ public class UserAddressServiceImpl implements UserAddressService {
             log.error("查看地址详情失败，地址信息不存在!");
             return ResponseUtil.dataEmpty();
         }
-        Map<Object, Object> data = new HashMap<>();
-        data.put("id", address.getId());
-        data.put("name", address.getName());
-        data.put("provinceId", address.getProvinceId());
-        data.put("cityId", address.getCityId());
-        data.put("areaId", address.getAreaId());
-        data.put("mobile", address.getMobile());
-        data.put("address", address.getAddress());
-        data.put("isDefault", address.getIsDefault());
+        AddressDetailVo detailVo = new AddressDetailVo();
         String provinceName = regionBusService.queryById(address.getProvinceId()).getName();
-        data.put("provinceName", provinceName);
         String cityName = regionBusService.queryById(address.getCityId()).getName();
-        data.put("cityName", cityName);
         String areaName = regionBusService.queryById(address.getAreaId()).getName();
-        data.put("areaName", areaName);
-        return ResponseUtil.ok(data);
+
+        detailVo.setId(address.getId());
+        detailVo.setName(address.getName());
+        detailVo.setProvinceId(address.getProvinceId());
+        detailVo.setCityId(address.getCityId());
+        detailVo.setAreaId(address.getAreaId());
+        detailVo.setMobile(address.getMobile());
+        detailVo.setAddress(address.getAddress());
+        detailVo.setIsDefault(address.getIsDefault());
+        detailVo.setProvinceName(provinceName);
+        detailVo.setCityName(cityName);
+        detailVo.setAreaName(areaName);
+
+        return ResponseUtil.ok(detailVo);
     }
 
 

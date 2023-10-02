@@ -1,6 +1,7 @@
 package com.zqz.shop.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.zqz.shop.bean.resp.SearchIndexResp;
 import com.zqz.shop.entity.SearchHistory;
 import com.zqz.shop.entity.SysKeyword;
 import com.zqz.shop.service.SearchService;
@@ -11,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -42,10 +41,10 @@ public class SearchServiceImpl implements SearchService {
         } else {
             historyList = new ArrayList<>(0);
         }
-        Map<String, Object> data = new HashMap<>(3);
-        data.put("defaultKeyword", defaultKeyword);
-        data.put("historyKeywordList", historyList);
-        data.put("hotKeywordList", hotKeywordList);
-        return ResponseUtil.ok(data);
+        SearchIndexResp indexResp = new SearchIndexResp();
+        indexResp.setDefaultKeyword(defaultKeyword);
+        indexResp.setHistoryKeywordList(historyList);
+        indexResp.setHotKeywordList(hotKeywordList);
+        return ResponseUtil.ok(indexResp);
     }
 }

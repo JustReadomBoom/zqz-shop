@@ -7,6 +7,8 @@ import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.bean.admin.BrandVo;
 import com.zqz.shop.bean.admin.CatVo;
 import com.zqz.shop.bean.admin.resp.PageQueryResp;
+import com.zqz.shop.bean.admin.resp.QueryCategoryAndAdminResp;
+import com.zqz.shop.bean.admin.resp.ValueLabelResp;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.entity.Brand;
 import com.zqz.shop.entity.Category;
@@ -20,9 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -106,18 +106,18 @@ public class AdminBrandServiceImpl implements AdminBrandService {
         }
         //系统用户
         List<Admin> admins = adminBusService.queryAllAdmin();
-        List<Map<String, Object>> adminList = new ArrayList<>();
+        List<ValueLabelResp> adminList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(admins)) {
             for (Admin admin : admins) {
-                Map<String, Object> b = new HashMap<>(2);
-                b.put("value", admin.getId());
-                b.put("label", admin.getUsername());
-                adminList.add(b);
+                ValueLabelResp labelResp = new ValueLabelResp();
+                labelResp.setLabel(admin.getUsername());
+                labelResp.setValue(admin.getId());
+                adminList.add(labelResp);
             }
         }
-        Map<String, Object> data = new HashMap<>();
-        data.put("categoryList", categoryList);
-        data.put("adminList", adminList);
-        return ResponseUtil.ok(data);
+        QueryCategoryAndAdminResp andAdminResp = new QueryCategoryAndAdminResp();
+        andAdminResp.setCategoryList(categoryList);
+        andAdminResp.setAdminList(adminList);
+        return ResponseUtil.ok(andAdminResp);
     }
 }

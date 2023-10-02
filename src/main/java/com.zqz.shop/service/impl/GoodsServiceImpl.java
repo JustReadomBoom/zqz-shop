@@ -3,16 +3,18 @@ package com.zqz.shop.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.bean.GoodInfo;
 import com.zqz.shop.bean.GoodsProductVo;
 import com.zqz.shop.bean.GoodsSpecificationVo;
+import com.zqz.shop.bean.resp.GoodsQueryByCategoryIdResp;
+import com.zqz.shop.bean.resp.GoodsQueryDetailResp;
+import com.zqz.shop.bean.resp.GoodsQueryListPageResp;
+import com.zqz.shop.bean.resp.QueryGoodsCountResp;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.entity.Goods;
 import com.zqz.shop.entity.GoodsAttribute;
-import com.zqz.shop.entity.GoodsProduct;
 import com.zqz.shop.service.GoodsService;
 import com.zqz.shop.service.business.*;
 import com.zqz.shop.utils.ResponseUtil;
@@ -21,9 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -49,10 +49,10 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public Object doQueryCount() {
-        Map<String, Object> data = new HashMap<>(1);
+        QueryGoodsCountResp goodsCountResp = new QueryGoodsCountResp();
         Object count = goodsBusService.doQueryCount();
-        data.put("goodsCount", count);
-        return ResponseUtil.ok(data);
+        goodsCountResp.setGoodsCount(count);
+        return ResponseUtil.ok(goodsCountResp);
     }
 
     @Override
@@ -61,9 +61,9 @@ public class GoodsServiceImpl implements GoodsService {
         if (ObjectUtil.isEmpty(category)) {
             return null;
         }
+        GoodsQueryByCategoryIdResp categoryIdResp = new GoodsQueryByCategoryIdResp();
         Category parent;
         List<Category> children;
-
         if (category.getPid() == 0) {
             parent = category;
             children = categoryBusService.queryByParentId(category.getId());
@@ -72,11 +72,10 @@ public class GoodsServiceImpl implements GoodsService {
             parent = categoryBusService.queryById(category.getPid());
             children = categoryBusService.queryByParentId(category.getPid());
         }
-        Map<String, Object> data = new HashMap<>(3);
-        data.put("currentCategory", category);
-        data.put("parentCategory", parent);
-        data.put("brotherCategory", children);
-        return ResponseUtil.ok(data);
+        categoryIdResp.setCurrentCategory(category);
+        categoryIdResp.setParentCategory(parent);
+        categoryIdResp.setBrotherCategory(children);
+        return ResponseUtil.ok(categoryIdResp);
     }
 
     @Override
@@ -86,6 +85,7 @@ public class GoodsServiceImpl implements GoodsService {
         if (CollectionUtil.isEmpty(goodsList)) {
             return ResponseUtil.ok();
         }
+        GoodsQueryListPageResp listPageResp = new GoodsQueryListPageResp();
         List<Integer> catIds = goodsBusService.queryCategoryIds(keyword, isNew, isHot);
         List<Category> categoryList;
         if (CollectionUtil.isNotEmpty(catIds)) {
@@ -93,16 +93,16 @@ public class GoodsServiceImpl implements GoodsService {
         } else {
             categoryList = new ArrayList<>();
         }
-        Map<String, Object> data = new HashMap<>(4);
-        data.put("goodsList", goodsList);
-        data.put("count", goodsPage.getTotalRow());
-        data.put("filterCategoryList", categoryList);
-        data.put("totalPages", goodsPage.getTotalPage());
-        return ResponseUtil.ok(data);
+        listPageResp.setGoodsList(goodsList);
+        listPageResp.setCount(goodsPage.getTotalRow());
+        listPageResp.setFilterCategoryList(categoryList);
+        listPageResp.setTotalPages(goodsPage.getTotalPage());
+        return ResponseUtil.ok(listPageResp);
     }
 
     @Override
     public Object doQueryDetail(Integer id, Integer userId) {
+        GoodsQueryDetailResp detailResp = new GoodsQueryDetailResp();
         //商品信息
         Goods goodInfo = goodsBusService.queryById(id);
         GoodInfo newGoodInfo = new GoodInfo();
@@ -116,14 +116,12 @@ public class GoodsServiceImpl implements GoodsService {
         List<GoodsSpecificationVo> specificationVoList = specificationBusService.queryListVoByGoodsId(id);
         //商品规格对应的数量和价格
         List<GoodsProductVo> productList = productBusService.queryListByGoodsId(id);
-
-        Map<String, Object> data = new HashMap<>(5);
-        data.put("info", newGoodInfo);
-        data.put("specificationList", specificationVoList);
-        data.put("productList", productList);
-        data.put("attribute", attributeList);
+        detailResp.setInfo(newGoodInfo);
+        detailResp.setSpecificationList(specificationVoList);
+        detailResp.setProductList(productList);
+        detailResp.setAttribute(attributeList);
         // 商品分享图片地址
-        data.put("shareImage", goodInfo.getShareUrl());
-        return ResponseUtil.ok(data);
+        detailResp.setShareImage(goodInfo.getShareUrl());
+        return ResponseUtil.ok(detailResp);
     }
 }

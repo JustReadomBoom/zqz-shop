@@ -13,6 +13,9 @@ import com.zqz.shop.bean.req.CancelOrderReq;
 import com.zqz.shop.bean.req.OrderDeleteReq;
 import com.zqz.shop.bean.req.OrderPrepayReq;
 import com.zqz.shop.bean.req.OrderSubmitReq;
+import com.zqz.shop.bean.resp.OrderSubmitResp;
+import com.zqz.shop.bean.resp.QueryOrderDetailResp;
+import com.zqz.shop.bean.resp.QueryOrderListResp;
 import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.*;
 import com.zqz.shop.enums.ResponseCode;
@@ -67,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> result = new HashMap<>(3);
+        QueryOrderListResp orderListResp = new QueryOrderListResp();
         List<Short> orderStatus = OrderUtil.orderStatus(showType);
         Page<Order> orderPage = orderBusService.queryByOrderStatus(userId, orderStatus, page, size);
         List<Order> orderRecords = orderPage.getRecords();
@@ -77,34 +80,32 @@ public class OrderServiceImpl implements OrderService {
         long totalRow = orderPage.getTotalRow();
         long totalPage = orderPage.getTotalPage();
         if (CollectionUtil.isNotEmpty(orderRecords)) {
-            List<Map<String, Object>> orderVoList = new ArrayList<>(orderRecords.size());
+            List<OrderVo> orderVoList = new ArrayList<>(orderRecords.size());
             for (Order order : orderRecords) {
-                Map<String, Object> orderVo = new HashMap<>(14);
-                orderVo.put("id", order.getId());
-                orderVo.put("orderSn", order.getOrderSn());
-                orderVo.put("addTime", order.getAddTime());
-                orderVo.put("consignee", order.getConsignee());
-                orderVo.put("mobile", order.getMobile());
-                orderVo.put("address", order.getAddress());
-                orderVo.put("goodsPrice", order.getGoodsPrice());
-                orderVo.put("freightPrice", order.getFreightPrice());
-                orderVo.put("actualPrice", order.getActualPrice());
-                orderVo.put("orderStatusText", OrderUtil.orderStatusText(order));
-                orderVo.put("handleOption", OrderUtil.build(order));
-                orderVo.put("expCode", order.getShipChannel());
-                orderVo.put("expNo", order.getShipSn());
+                OrderVo vo = new OrderVo();
+                vo.setId(order.getId());
+                vo.setOrderSn(order.getOrderSn());
+                vo.setAddTime(order.getAddTime());
+                vo.setConsignee(order.getConsignee());
+                vo.setMobile(order.getMobile());
+                vo.setAddress(order.getAddress());
+                vo.setGoodsPrice(order.getGoodsPrice());
+                vo.setFreightPrice(order.getFreightPrice());
+                vo.setActualPrice(order.getActualPrice());
+                vo.setOrderStatusText(OrderUtil.orderStatusText(order));
+                vo.setHandleOption(OrderUtil.build(order));
+                vo.setExpCode(order.getShipChannel());
+                vo.setExpNo(order.getShipSn());
 
                 List<OrderGoods> orderGoodsList = orderGoodsBusService.queryByOrderId(order.getId());
-                orderVo.put("goodsList", orderGoodsList);
-
-                orderVoList.add(orderVo);
+                vo.setGoodsList(orderGoodsList);
+                orderVoList.add(vo);
             }
-
-            result.put("count", totalRow);
-            result.put("data", orderVoList);
-            result.put("totalPages", totalPage);
+            orderListResp.setCount(totalRow);
+            orderListResp.setData(orderVoList);
+            orderListResp.setTotalPages(totalPage);
         }
-        return ResponseUtil.ok(result);
+        return ResponseUtil.ok(orderListResp);
     }
 
     @Override
@@ -113,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
         if (ObjectUtil.isEmpty(userId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> data = new HashMap<>(1);
+        OrderSubmitResp submitResp = new OrderSubmitResp();
         Integer cartId = req.getCartId();
         Integer couponId = req.getCouponId();
         Integer addressId = req.getAddressId();
@@ -268,8 +269,8 @@ public class OrderServiceImpl implements OrderService {
                 throw new ShopException("商品货品库存减少失败!");
             }
         }
-        data.put("orderId", orderId);
-        return ResponseUtil.ok(data);
+        submitResp.setOrderId(orderId);
+        return ResponseUtil.ok(submitResp);
     }
 
     @Override
@@ -433,27 +434,25 @@ public class OrderServiceImpl implements OrderService {
             log.error("查看订单详情失败，用户id不一致, 订单userId={}, userId={}", order.getUserId(), userId);
             return ResponseUtil.serious();
         }
-        Map<String, Object> orderVo = new HashMap<>(14);
-        orderVo.put("id", order.getId());
-        orderVo.put("orderSn", order.getOrderSn());
-        orderVo.put("addTime", order.getAddTime());
-        orderVo.put("consignee", order.getConsignee());
-        orderVo.put("mobile", order.getMobile());
-        orderVo.put("address", order.getAddress());
-        orderVo.put("goodsPrice", order.getGoodsPrice());
-        orderVo.put("freightPrice", order.getFreightPrice());
-        orderVo.put("discountPrice", order.getIntegralPrice().add(order.getGrouponPrice()).add(order.getCouponPrice()));
-        orderVo.put("actualPrice", order.getActualPrice());
-        orderVo.put("orderStatusText", OrderUtil.orderStatusText(order));
-        orderVo.put("handleOption", OrderUtil.build(order));
-        orderVo.put("expCode", order.getShipChannel());
-        orderVo.put("expNo", order.getShipSn());
-
+        OrderVo orderVo = new OrderVo();
+        orderVo.setId(order.getId());
+        orderVo.setOrderSn(order.getOrderSn());
+        orderVo.setAddTime(order.getAddTime());
+        orderVo.setConsignee(order.getConsignee());
+        orderVo.setMobile(order.getMobile());
+        orderVo.setAddress(order.getAddress());
+        orderVo.setGoodsPrice(order.getGoodsPrice());
+        orderVo.setFreightPrice(order.getFreightPrice());
+        orderVo.setDiscountPrice(order.getIntegralPrice().add(order.getGrouponPrice()).add(order.getCouponPrice()));
+        orderVo.setActualPrice(order.getActualPrice());
+        orderVo.setOrderStatusText(OrderUtil.orderStatusText(order));
+        orderVo.setHandleOption(OrderUtil.build(order));
+        orderVo.setExpCode(order.getShipChannel());
+        orderVo.setExpNo(order.getShipSn());
         List<OrderGoods> orderGoodsList = orderGoodsBusService.queryByOrderId(orderId);
-
-        Map<String, Object> result = new HashMap<>(2);
-        result.put("orderInfo", orderVo);
-        result.put("orderGoods", orderGoodsList);
-        return ResponseUtil.ok(result);
+        QueryOrderDetailResp detailResp = new QueryOrderDetailResp();
+        detailResp.setOrderInfo(orderVo);
+        detailResp.setOrderGoods(orderGoodsList);
+        return ResponseUtil.ok(detailResp);
     }
 }

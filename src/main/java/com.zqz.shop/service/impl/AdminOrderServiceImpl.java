@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.zqz.shop.bean.admin.UserVo;
+import com.zqz.shop.bean.admin.resp.AdminOrderDetailResp;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
 import com.zqz.shop.entity.Order;
 import com.zqz.shop.entity.OrderGoods;
 import com.zqz.shop.service.AdminGoodsService;
@@ -16,9 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -43,14 +43,16 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         if (ObjectUtil.isEmpty(adminUserId)) {
             return ResponseUtil.unlogin();
         }
+
+        PageQueryResp<Order> queryResp = new PageQueryResp<>();
+
         List<Integer> brandIds = null;
         if (adminGoodsService.isBrandManager(adminUserId)) {
             brandIds = adminGoodsService.getBrandIds(userId);
             if (CollectionUtil.isEmpty(brandIds)) {
-                Map<String, Object> data = new HashMap<>(2);
-                data.put("total", 0L);
-                data.put("items", null);
-                return ResponseUtil.ok(data);
+                queryResp.setTotal(0L);
+                queryResp.setItems(null);
+                return ResponseUtil.ok(queryResp);
             }
         }
         List<Order> orderList;
@@ -64,10 +66,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             orderList = brandPage.getRecords();
             total = brandPage.getTotalRow();
         }
-        Map<String, Object> data = new HashMap<>(2);
-        data.put("total", total);
-        data.put("items", orderList);
-        return ResponseUtil.ok(data);
+        queryResp.setTotal(total);
+        queryResp.setItems(orderList);
+        return ResponseUtil.ok(queryResp);
     }
 
     @Override
@@ -84,6 +85,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         if (ObjectUtil.isEmpty(adminUserId)) {
             return ResponseUtil.unlogin();
         }
+        AdminOrderDetailResp detailResp = new AdminOrderDetailResp();
         Order order = orderBusService.queryById(id);
         if (ObjectUtil.isEmpty(order)) {
             return ResponseUtil.dataEmpty();
@@ -93,10 +95,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             return ResponseUtil.dataEmpty();
         }
         UserVo userVo = userBusService.queryUserVoById(order.getUserId());
-        Map<String, Object> data = new HashMap<>(3);
-        data.put("order", order);
-        data.put("orderGoods", orderGoods);
-        data.put("user", userVo);
-        return ResponseUtil.ok(data);
+        detailResp.setOrder(order);
+        detailResp.setOrderGoods(orderGoods);
+        detailResp.setUser(userVo);
+        return ResponseUtil.ok(detailResp);
     }
 }

@@ -11,6 +11,7 @@ import com.mybatisflex.core.query.QueryCondition;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
+import com.zqz.shop.bean.UserOrderInfo;
 import com.zqz.shop.bean.admin.CategorySellAmts;
 import com.zqz.shop.bean.admin.DayStatis;
 import com.zqz.shop.entity.Order;
@@ -40,7 +41,7 @@ public class OrderBusService {
     @Resource
     private OrderMapper orderMapper;
 
-    public Map<String, Object> getOrderInfoByUserId(Integer userId) {
+    public UserOrderInfo getOrderInfoByUserId(Integer userId) {
         QueryWrapper wrapper = QueryWrapper.create();
         wrapper.select()
                 .where(ORDER.USER_ID.eq(userId))
@@ -64,13 +65,12 @@ public class OrderBusService {
                     // do nothing
                 }
             }
-
-            Map<String, Object> orderInfo = new HashMap<>(4);
-            orderInfo.put("unpaid", unpaid);
-            orderInfo.put("unship", unship);
-            orderInfo.put("unrecv", unrecv);
-            orderInfo.put("uncomment", uncomment);
-            return orderInfo;
+            UserOrderInfo userOrderInfo = new UserOrderInfo();
+            userOrderInfo.setUnpaid(unpaid);
+            userOrderInfo.setUnship(unship);
+            userOrderInfo.setUnrecv(unrecv);
+            userOrderInfo.setUncomment(uncomment);
+            return userOrderInfo;
         }
         return null;
     }

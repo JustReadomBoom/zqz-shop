@@ -1,5 +1,6 @@
 package com.zqz.shop.service.impl;
 
+import com.zqz.shop.bean.resp.HomeQueryIndexResp;
 import com.zqz.shop.entity.Ad;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.entity.Topic;
@@ -13,9 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -37,14 +36,14 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public Object doQueryIndex(Integer userId) {
         try {
-            Map<String, Object> data = new HashMap<>(3);
             List<Ad> ads = adBusService.queryAdList();
             List<Category> categories = categoryBusService.queryListPage(1, 9);
             List<Topic> topics = topicBusService.queryListPage(1, 9);
-            data.put("banner", ads);
-            data.put("channel", categories);
-            data.put("topicList", topics);
-            return ResponseUtil.ok(data);
+            HomeQueryIndexResp indexResp = new HomeQueryIndexResp();
+            indexResp.setBanner(ads);
+            indexResp.setChannel(categories);
+            indexResp.setTopicList(topics);
+            return ResponseUtil.ok(indexResp);
         } catch (Exception e) {
             throw new ShopException(String.format("查询主页信息异常:%s", e.getMessage()));
         }

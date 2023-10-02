@@ -6,9 +6,14 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.mybatisflex.core.paginate.Page;
+import com.zqz.shop.bean.GoodInfo;
 import com.zqz.shop.bean.GoodsProductVo;
 import com.zqz.shop.bean.admin.*;
 import com.zqz.shop.bean.admin.req.GoodsUpdateReq;
+import com.zqz.shop.bean.admin.resp.AdminGoodsDetailsResp;
+import com.zqz.shop.bean.admin.resp.CatAndBrandResp;
+import com.zqz.shop.bean.admin.resp.PageQueryResp;
+import com.zqz.shop.bean.admin.resp.ValueLabelResp;
 import com.zqz.shop.entity.*;
 import com.zqz.shop.enums.AdminResponseCode;
 import com.zqz.shop.exception.ShopException;
@@ -65,10 +70,10 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
         if (isBrandManager(userId)) {
             brandIds = getBrandIds(userId);
             if (CollectionUtil.isEmpty(brandIds)) {
-                Map<String, Object> data = new HashMap<>(2);
-                data.put("total", 0L);
-                data.put("items", null);
-                return ResponseUtil.ok(data);
+                PageQueryResp<Goods> queryResp = new PageQueryResp<>();
+                queryResp.setTotal(0L);
+                queryResp.setItems(null);
+                return ResponseUtil.ok(queryResp);
             }
         }
         return queryList(goodsSn, name, page, limit, brandIds);
@@ -101,7 +106,7 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
             categoryList.add(l1CatVo);
         }
         //品牌商获取需要控制数据权限，如果是店铺管理员下拉的品牌商只能选择当前用户可管理的品牌商
-        List<Map<String, Object>> brandList = new ArrayList<>();
+        List<ValueLabelResp> brandList = new ArrayList<>();
         List<Brand> list;
         if (isBrandManager(userId)) {
             list = brandBusService.getAdminBrands(userId);
@@ -110,23 +115,23 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
             brandList = new ArrayList<>(list.size());
         }
         for (Brand brand : list) {
-            Map<String, Object> b = new HashMap<>(2);
-            b.put("value", brand.getId());
-            b.put("label", brand.getName());
-            brandList.add(b);
+            ValueLabelResp labelResp = new ValueLabelResp();
+            labelResp.setLabel(brand.getName());
+            labelResp.setValue(brand.getId());
+            brandList.add(labelResp);
         }
-        Map<String, Object> data = new HashMap<>(2);
-        data.put("categoryList", categoryList);
-        data.put("brandList", brandList);
-        return ResponseUtil.ok(data);
+        CatAndBrandResp andBrandResp = new CatAndBrandResp();
+        andBrandResp.setCategoryList(categoryList);
+        andBrandResp.setBrandList(brandList);
+        return ResponseUtil.ok(andBrandResp);
     }
 
     private Object queryList(String goodsSn, String name, Integer page, Integer limit, List<Integer> brandIds) {
         Page<Goods> goodsPage = goodsBusService.queryPage(goodsSn, name, page, limit, brandIds);
-        Map<String, Object> data = new HashMap<>(2);
-        data.put("total", goodsPage.getTotalRow());
-        data.put("items", goodsPage.getRecords());
-        return ResponseUtil.ok(data);
+        PageQueryResp<Goods> queryResp = new PageQueryResp<>();
+        queryResp.setTotal(goodsPage.getTotalRow());
+        queryResp.setItems(goodsPage.getRecords());
+        return ResponseUtil.ok(queryResp);
     }
 
 
@@ -187,8 +192,8 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
         if (ObjectUtil.isEmpty(adminUserId)) {
             return ResponseUtil.unlogin();
         }
-        Map<String, Object> data = new HashMap<>(5);
         Goods goods = goodsBusService.queryById(id);
+
         List<GoodsProductVo> goodsProductVos = goodsProductBusService.queryListByGoodsId(id);
         List<GoodsSpecification> goodsSpecifications = goodsSpecificationBusService.queryByGoodsId(id);
         List<GoodsAttribute> goodsAttributes = goodsAttributeBusService.queryListByGoodsId(id);
@@ -196,20 +201,27 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
         if (ObjectUtil.isEmpty(goods)) {
             return ResponseUtil.dataEmpty();
         }
+        GoodInfo goodsVo = new GoodInfo();
+        BeanUtil.copyProperties(goods, goodsVo);
+        goodsVo.setGallery(JSONUtil.parseArray(goods.getGallery()).toList(String.class));
+
         Integer categoryId = goods.getCategoryId();
         Category category = categoryBusService.queryById(categoryId);
         Integer[] categoryIds = new Integer[]{};
+
         if (ObjectUtil.isNotEmpty(category)) {
             Integer parentCategoryId = category.getPid();
             categoryIds = new Integer[]{parentCategoryId, categoryId};
         }
 
-        data.put("goods", goods);
-        data.put("specifications", goodsSpecifications);
-        data.put("products", goodsProductVos);
-        data.put("attributes", goodsAttributes);
-        data.put("categoryIds", categoryIds);
-        return ResponseUtil.ok(data);
+        AdminGoodsDetailsResp goodsDetailsResp = new AdminGoodsDetailsResp();
+        goodsDetailsResp.setGoods(goodsVo);
+        goodsDetailsResp.setSpecifications(goodsSpecifications);
+        goodsDetailsResp.setProducts(goodsProductVos);
+        goodsDetailsResp.setAttributes(goodsAttributes);
+        goodsDetailsResp.setCategoryIds(categoryIds);
+
+        return ResponseUtil.ok(goodsDetailsResp);
     }
 
     @Override

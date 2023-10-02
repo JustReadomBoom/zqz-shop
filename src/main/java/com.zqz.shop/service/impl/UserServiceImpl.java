@@ -1,5 +1,7 @@
 package com.zqz.shop.service.impl;
 
+import com.zqz.shop.bean.UserOrderInfo;
+import com.zqz.shop.bean.resp.UserOrderIndexResp;
 import com.zqz.shop.service.UserService;
 import com.zqz.shop.service.business.OrderBusService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Object doIndex(Integer userId) {
-        Map<String, Object> data = new HashMap<>(1);
-        Map<String, Object> orderInfoMap = orderBusService.getOrderInfoByUserId(userId);
-        data.put("order", orderInfoMap);
-        return data;
+        UserOrderIndexResp indexResp = new UserOrderIndexResp();
+        UserOrderInfo userOrderInfo = orderBusService.getOrderInfoByUserId(userId);
+        indexResp.setOrder(userOrderInfo);
+        return indexResp;
     }
 }
