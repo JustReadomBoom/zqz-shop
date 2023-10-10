@@ -428,7 +428,7 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
             }
 
             BigDecimal price = product.getPrice();
-            if (price == null) {
+            if (ObjectUtil.isEmpty(price)) {
                 return ResponseUtil.badArgument();
             }
 

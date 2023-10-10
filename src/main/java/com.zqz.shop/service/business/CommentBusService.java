@@ -27,7 +27,7 @@ public class CommentBusService {
 
     public Page<Comment> queryPage(String userId, String valueId, Integer page, Integer limit) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("1 = 1")
+        wrapper.select().and("Constant.WHERE_ONE_TO_ONE")
                 .and(COMMENT.TYPE.ne((byte) 2))
                 .and(COMMENT.DELETED.eq(false));
         if (StrUtil.isNotBlank(userId)) {

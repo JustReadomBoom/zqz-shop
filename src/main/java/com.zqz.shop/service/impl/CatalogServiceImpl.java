@@ -1,6 +1,8 @@
 package com.zqz.shop.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.zqz.shop.bean.resp.CatalogCurrentResp;
+import com.zqz.shop.bean.resp.CatalogIndexResp;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.service.CatalogService;
 import com.zqz.shop.service.business.CategoryBusService;
@@ -8,9 +10,7 @@ import com.zqz.shop.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: ZQZ
@@ -40,11 +40,11 @@ public class CatalogServiceImpl implements CatalogService {
         if (ObjectUtil.isNotEmpty(currentCategory)) {
             currentSubCategory = categoryBusService.queryByParentId(currentCategory.getId());
         }
-        Map<String, Object> data = new HashMap<>(3);
-        data.put("categoryList", l1CategoryList);
-        data.put("currentCategory", currentCategory);
-        data.put("currentSubCategory", currentSubCategory);
-        return ResponseUtil.ok(data);
+        CatalogIndexResp indexResp = new CatalogIndexResp();
+        indexResp.setCategoryList(l1CategoryList);
+        indexResp.setCurrentCategory(currentCategory);
+        indexResp.setCurrentSubCategory(currentSubCategory);
+        return ResponseUtil.ok(indexResp);
     }
 
     @Override
@@ -54,10 +54,10 @@ public class CatalogServiceImpl implements CatalogService {
         if(ObjectUtil.isEmpty(currentCategory)){
             return ResponseUtil.ok();
         }
-        Map<String, Object> data = new HashMap<>(2);
+        CatalogCurrentResp currentResp = new CatalogCurrentResp();
         List<Category> currentSubCategory = categoryBusService.queryByParentId(currentCategory.getId());
-        data.put("currentCategory", currentCategory);
-        data.put("currentSubCategory", currentSubCategory);
-        return ResponseUtil.ok(data);
+        currentResp.setCurrentCategory(currentCategory);
+        currentResp.setCurrentSubCategory(currentSubCategory);
+        return ResponseUtil.ok(currentResp);
     }
 }

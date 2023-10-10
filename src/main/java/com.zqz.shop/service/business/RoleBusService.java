@@ -55,7 +55,7 @@ public class RoleBusService {
 
     public Page<Role> queryPage(Integer page, Integer limit, String roleName) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("1 = 1")
+        wrapper.select().and("Constant.WHERE_ONE_TO_ONE")
                 .and(ROLE.DELETED.eq(false));
         if (StrUtil.isNotBlank(roleName)) {
             wrapper.and(ROLE.NAME.like(roleName));

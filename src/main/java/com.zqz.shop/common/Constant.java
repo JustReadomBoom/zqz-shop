@@ -9,4 +9,6 @@ package com.zqz.shop.common;
 public class Constant {
 
     public static final String DEFAULT_ORDER_FIX = "小程序订单：";
+
+    public static final String WHERE_ONE_TO_ONE = "1 = 1";
 }

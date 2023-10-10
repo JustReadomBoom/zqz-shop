@@ -43,7 +43,7 @@ public class SysKeywordBusService {
 
     public Page<SysKeyword> queryPage(Integer page, Integer limit, String keyword, String url) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("1 = 1");
+        wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
         if (StrUtil.isNotBlank(keyword)) {
             wrapper.and(SYS_KEYWORD.KEYWORD.like(keyword));
         }

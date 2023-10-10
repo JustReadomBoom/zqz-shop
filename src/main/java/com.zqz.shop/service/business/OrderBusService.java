@@ -7,10 +7,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
-import com.mybatisflex.core.query.QueryCondition;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.update.UpdateWrapper;
-import com.mybatisflex.core.util.UpdateEntity;
 import com.zqz.shop.bean.UserOrderInfo;
 import com.zqz.shop.bean.admin.CategorySellAmts;
 import com.zqz.shop.bean.admin.DayStatis;
@@ -20,10 +17,7 @@ import com.zqz.shop.utils.OrderUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -150,7 +144,7 @@ public class OrderBusService {
 
     public Page<Order> queryPage(Integer userId, String orderSn, List<Short> orderStatusArray, Integer page, Integer limit) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().and("1 = 1");
+        QueryWrapper select = wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
         if (ObjectUtil.isNotEmpty(userId)) {
             select = select.and(ORDER.USER_ID.eq(userId));
         }

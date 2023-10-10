@@ -45,7 +45,7 @@ public class BrandBusService {
 
     public Page<Brand> queryPage(Integer page, Integer limit, String id, String name) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("1 = 1");
+        wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
         if (StrUtil.isNotBlank(id)) {
             wrapper.and(BRAND.ID.eq(id));
         }

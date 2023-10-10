@@ -43,7 +43,7 @@ public class AdminBusService {
 
     public Page<Admin> queryPage(Integer page, Integer limit, String username) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().and("1 = 1");
+        QueryWrapper select = wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
         if (StrUtil.isNotBlank(username)) {
             select = select.and(ADMIN.USERNAME.like(username));
         }

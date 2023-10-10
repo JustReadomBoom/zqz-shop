@@ -3,6 +3,7 @@ package com.zqz.shop.service.business;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.Region;
 import com.zqz.shop.mapper.RegionMapper;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,7 @@ public class RegionBusService {
 
     public Page<Region> queryPage(Integer page, Integer limit, String name, String code) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("1 = 1");
+        wrapper.select().and(Constant.WHERE_ONE_TO_ONE);
         if (StrUtil.isNotBlank(name)) {
             wrapper.and(REGION.NAME.like(name));
         }

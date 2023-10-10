@@ -16,7 +16,6 @@ import com.zqz.shop.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -140,7 +139,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         }
 
         Integer pid = address.getProvinceId();
-        if (pid == null) {
+        if (ObjectUtil.isEmpty(pid)) {
             return ResponseUtil.badArgument();
         }
         if (ObjectUtil.isEmpty(regionBusService.queryById(pid))) {
@@ -148,7 +147,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         }
 
         Integer cid = address.getCityId();
-        if (cid == null) {
+        if (ObjectUtil.isEmpty(cid)) {
             return ResponseUtil.badArgument();
         }
         if (ObjectUtil.isEmpty(regionBusService.queryById(cid))) {
@@ -156,7 +155,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         }
 
         Integer aid = address.getAreaId();
-        if (aid == null) {
+        if (ObjectUtil.isEmpty(aid)) {
             return ResponseUtil.badArgument();
         }
         if (ObjectUtil.isEmpty(regionBusService.queryById(aid))) {
@@ -164,7 +163,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         }
 
         String detailedAddress = address.getAddress();
-        if (StringUtils.isEmpty(detailedAddress)) {
+        if (StrUtil.isBlank(detailedAddress)) {
             return ResponseUtil.badArgument();
         }
 

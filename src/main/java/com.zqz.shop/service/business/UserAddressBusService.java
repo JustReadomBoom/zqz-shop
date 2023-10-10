@@ -4,6 +4,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.bean.AddressDetailVo;
+import com.zqz.shop.bean.AddressToVo;
 import com.zqz.shop.entity.UserAddress;
 import com.zqz.shop.mapper.UserAddressMapper;
 import org.springframework.stereotype.Service;
@@ -68,7 +70,7 @@ public class UserAddressBusService {
 
     public Page<UserAddress> queryPage(Integer page, Integer limit, Integer userId, String name) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().where("1 = 1");
+        QueryWrapper select = wrapper.select().where("Constant.WHERE_ONE_TO_ONE");
 
         if (ObjectUtil.isNotEmpty(userId)) {
             select = select.and(USER_ADDRESS.USER_ID.eq(userId));
@@ -82,23 +84,23 @@ public class UserAddressBusService {
         return addressMapper.paginateWithRelations(page, limit, select);
     }
 
-    public Map<String, Object> toVo(UserAddress address) {
-        Map<String, Object> addressVo = new HashMap<>();
-        addressVo.put("id", address.getId());
-        addressVo.put("userId", address.getUserId());
-        addressVo.put("name", address.getName());
-        addressVo.put("mobile", address.getMobile());
-        addressVo.put("isDefault", address.getIsDefault());
-        addressVo.put("provinceId", address.getProvinceId());
-        addressVo.put("cityId", address.getCityId());
-        addressVo.put("areaId", address.getAreaId());
-        addressVo.put("address", address.getAddress());
+    public AddressToVo toVo(UserAddress address) {
+        AddressToVo addressVo = new AddressToVo();
+        addressVo.setId(address.getId());
+        addressVo.setUserId(address.getUserId());
+        addressVo.setName(address.getName());
+        addressVo.setMobile(address.getMobile());
+        addressVo.setIsDefault(address.getIsDefault());
+        addressVo.setProvinceId(address.getProvinceId());
+        addressVo.setCityId(address.getCityId());
+        addressVo.setAreaId(address.getAreaId());
+        addressVo.setAddress(address.getAddress());
         String province = regionBusService.queryById(address.getProvinceId()).getName();
         String city = regionBusService.queryById(address.getCityId()).getName();
         String area = regionBusService.queryById(address.getAreaId()).getName();
-        addressVo.put("province", province);
-        addressVo.put("city", city);
-        addressVo.put("area", area);
+        addressVo.setProvince(province);
+        addressVo.setCity(city);
+        addressVo.setArea(area);
         return addressVo;
     }
 }

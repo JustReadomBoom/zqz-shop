@@ -1,7 +1,6 @@
 package com.zqz.shop.service.business;
 
 import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.update.UpdateWrapper;
 import com.zqz.shop.entity.Cart;
 import com.zqz.shop.mapper.CartMapper;
 import org.springframework.stereotype.Service;
