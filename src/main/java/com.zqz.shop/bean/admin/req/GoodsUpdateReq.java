@@ -1,5 +1,6 @@
 package com.zqz.shop.bean.admin.req;
 
+import com.zqz.shop.bean.GoodInfo;
 import com.zqz.shop.bean.admin.GoodsAttributeUpdateVo;
 import com.zqz.shop.bean.admin.GoodsProductUpdateVo;
 import com.zqz.shop.bean.admin.GoodsSpecificationUpdateVo;
@@ -19,7 +20,7 @@ import java.util.List;
 public class GoodsUpdateReq implements Serializable {
     private static final long serialVersionUID = 4649507593636055299L;
 
-    private Goods goods;
+    private GoodInfo goods;
 
     private List<GoodsSpecificationUpdateVo> specifications;
 

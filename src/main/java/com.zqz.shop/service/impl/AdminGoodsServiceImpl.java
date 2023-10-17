@@ -236,7 +236,10 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
             return validateMsg;
         }
 
-        Goods goods = req.getGoods();
+        GoodInfo goods = req.getGoods();
+        Goods upGoods = new Goods();
+        BeanUtil.copyProperties(goods, upGoods);
+        upGoods.setGallery(JSONUtil.toJsonStr(goods.getGallery()));
         List<GoodsProductUpdateVo> products = req.getProducts();
         List<GoodsAttributeUpdateVo> attributes = req.getAttributes();
         List<GoodsSpecificationUpdateVo> specifications = req.getSpecifications();
@@ -249,7 +252,7 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
             return ResponseUtil.fail(AdminResponseCode.GOODS_UPDATE_NOT_ALLOWED);
         }
 
-        int up = goodsBusService.updateById(goods);
+        int up = goodsBusService.updateById(upGoods);
         if (up <= 0) {
             throw new ShopException("商品更新失败!");
         }
@@ -345,7 +348,7 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
     }
 
     private Object updateValidate(GoodsUpdateReq req) {
-        Goods goods = req.getGoods();
+        GoodInfo goods = req.getGoods();
         String name = goods.getName();
         if (StrUtil.isBlank(name)) {
             return ResponseUtil.badArgument();
