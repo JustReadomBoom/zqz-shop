@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.Comment;
 import com.zqz.shop.mapper.CommentMapper;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class CommentBusService {
 
     public Page<Comment> queryPage(String userId, String valueId, Integer page, Integer limit) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("Constant.WHERE_ONE_TO_ONE")
+        wrapper.select().and(Constant.WHERE_ONE_TO_ONE)
                 .and(COMMENT.TYPE.ne((byte) 2))
                 .and(COMMENT.DELETED.eq(false));
         if (StrUtil.isNotBlank(userId)) {

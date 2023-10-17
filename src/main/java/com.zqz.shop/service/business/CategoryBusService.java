@@ -3,6 +3,7 @@ package com.zqz.shop.service.business;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.Category;
 import com.zqz.shop.mapper.CategoryMapper;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class CategoryBusService {
 
     public Page<Category> queryPage(Integer page, Integer limit, String id, String name) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
+        wrapper.select().and(Constant.WHERE_ONE_TO_ONE);
         if (StrUtil.isNotBlank(id)) {
             wrapper.and(CATEGORY.ID.eq(id));
         }

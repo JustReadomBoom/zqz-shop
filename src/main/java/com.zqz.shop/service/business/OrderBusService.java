@@ -11,6 +11,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.bean.UserOrderInfo;
 import com.zqz.shop.bean.admin.CategorySellAmts;
 import com.zqz.shop.bean.admin.DayStatis;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.Order;
 import com.zqz.shop.mapper.OrderMapper;
 import com.zqz.shop.utils.OrderUtil;
@@ -144,7 +145,7 @@ public class OrderBusService {
 
     public Page<Order> queryPage(Integer userId, String orderSn, List<Short> orderStatusArray, Integer page, Integer limit) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
+        QueryWrapper select = wrapper.select().and(Constant.WHERE_ONE_TO_ONE);
         if (ObjectUtil.isNotEmpty(userId)) {
             select = select.and(ORDER.USER_ID.eq(userId));
         }

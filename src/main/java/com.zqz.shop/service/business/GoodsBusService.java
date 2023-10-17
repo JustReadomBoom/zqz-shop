@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.Goods;
 import com.zqz.shop.mapper.GoodsMapper;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class GoodsBusService {
 
     public Page<Goods> queryByParam(Integer categoryId, String keyword, Boolean isNew, Boolean isHot, Integer page, Integer size) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().where("Constant.WHERE_ONE_TO_ONE");
+        QueryWrapper select = wrapper.select().where(Constant.WHERE_ONE_TO_ONE);
         if (ObjectUtil.isNotEmpty(categoryId)) {
             select = select.and(GOODS.CATEGORY_ID.eq(categoryId));
         }
@@ -61,7 +62,7 @@ public class GoodsBusService {
     public List<Integer> queryCategoryIds(String keyword, Boolean isNew, Boolean isHot) {
         List<Integer> ids = new ArrayList<>();
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().where("Constant.WHERE_ONE_TO_ONE");
+        QueryWrapper select = wrapper.select().where(Constant.WHERE_ONE_TO_ONE);
         if (StrUtil.isNotBlank(keyword)) {
             select = select.and(GOODS.KEYWORDS.like(keyword));
         }
@@ -101,7 +102,7 @@ public class GoodsBusService {
 
     public Page<Goods> queryPage(String goodsSn, String name, Integer page, Integer limit, List<Integer> brandIds) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
+        QueryWrapper select = wrapper.select().and(Constant.WHERE_ONE_TO_ONE);
         if (StrUtil.isNotBlank(goodsSn)) {
             select = select.and(GOODS.GOODS_SN.eq(goodsSn));
         }

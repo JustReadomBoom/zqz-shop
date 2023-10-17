@@ -3,6 +3,7 @@ package com.zqz.shop.service.business;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.Admin;
 import com.zqz.shop.mapper.AdminMapper;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class AdminBusService {
 
     public Page<Admin> queryPage(Integer page, Integer limit, String username) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
+        QueryWrapper select = wrapper.select().and(Constant.WHERE_ONE_TO_ONE);
         if (StrUtil.isNotBlank(username)) {
             select = select.and(ADMIN.USERNAME.like(username));
         }

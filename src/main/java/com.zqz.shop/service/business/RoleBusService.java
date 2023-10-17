@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.Role;
 import com.zqz.shop.mapper.RoleMapper;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class RoleBusService {
 
     public Page<Role> queryPage(Integer page, Integer limit, String roleName) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("Constant.WHERE_ONE_TO_ONE")
+        wrapper.select().and(Constant.WHERE_ONE_TO_ONE)
                 .and(ROLE.DELETED.eq(false));
         if (StrUtil.isNotBlank(roleName)) {
             wrapper.and(ROLE.NAME.like(roleName));

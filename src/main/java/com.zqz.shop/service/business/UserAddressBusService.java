@@ -6,6 +6,7 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.bean.AddressDetailVo;
 import com.zqz.shop.bean.AddressToVo;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.UserAddress;
 import com.zqz.shop.mapper.UserAddressMapper;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,7 @@ public class UserAddressBusService {
 
     public Page<UserAddress> queryPage(Integer page, Integer limit, Integer userId, String name) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().where("Constant.WHERE_ONE_TO_ONE");
+        QueryWrapper select = wrapper.select().where(Constant.WHERE_ONE_TO_ONE);
 
         if (ObjectUtil.isNotEmpty(userId)) {
             select = select.and(USER_ADDRESS.USER_ID.eq(userId));

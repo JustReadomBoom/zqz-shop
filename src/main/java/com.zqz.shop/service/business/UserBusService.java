@@ -5,6 +5,7 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.zqz.shop.bean.admin.DayStatis;
 import com.zqz.shop.bean.admin.UserVo;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.User;
 import com.zqz.shop.mapper.UserMapper;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,7 @@ public class UserBusService {
 
     public Page<User> queryPage(String username, String mobile, Integer page, Integer limit) {
         QueryWrapper wrapper = QueryWrapper.create();
-        QueryWrapper select = wrapper.select().where("Constant.WHERE_ONE_TO_ONE");
+        QueryWrapper select = wrapper.select().where(Constant.WHERE_ONE_TO_ONE);
         if (StrUtil.isNotBlank(username)) {
             select = select.and(USER.NICKNAME.like(username));
         }

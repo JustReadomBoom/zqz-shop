@@ -3,6 +3,7 @@ package com.zqz.shop.service.business;
 import cn.hutool.core.util.StrUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.zqz.shop.common.Constant;
 import com.zqz.shop.entity.SysKeyword;
 import com.zqz.shop.mapper.SysKeywordMapper;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class SysKeywordBusService {
 
     public Page<SysKeyword> queryPage(Integer page, Integer limit, String keyword, String url) {
         QueryWrapper wrapper = QueryWrapper.create();
-        wrapper.select().and("Constant.WHERE_ONE_TO_ONE");
+        wrapper.select().and(Constant.WHERE_ONE_TO_ONE);
         if (StrUtil.isNotBlank(keyword)) {
             wrapper.and(SYS_KEYWORD.KEYWORD.like(keyword));
         }
