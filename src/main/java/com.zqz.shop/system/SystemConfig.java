@@ -62,7 +62,7 @@ public class SystemConfig extends BaseConfig {
 
 	public static boolean isAutoCreateShareImage() {
 		int autoCreate = getConfigInt(PRE_FIX + "shareimage.autocreate");
-		return autoCreate == 0 ? false : true;
+		return autoCreate != 0;
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class SystemConfig extends BaseConfig {
 	 */
 	public static boolean isMultiOrderModel() {
 		int multiOrderModel = getConfigInt(PRE_FIX + "multi.order.model");
-		return multiOrderModel == 0 ? false : true;
+		return multiOrderModel != 0;
 	}
 
 	@Override

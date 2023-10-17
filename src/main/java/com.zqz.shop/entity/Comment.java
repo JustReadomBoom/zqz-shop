@@ -8,9 +8,6 @@ import java.util.Date;
 @Data
 @Table("comment")
 public class Comment {
-    public static final Boolean NOT_DELETED = false;
-
-    public static final Boolean IS_DELETED = true;
 
     private Integer id;
 

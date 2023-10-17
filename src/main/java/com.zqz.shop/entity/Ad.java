@@ -9,10 +9,6 @@ import java.util.Date;
 @Data
 @Table("ad")
 public class Ad {
-    public static final Boolean NOT_DELETED = false;
-
-    public static final Boolean IS_DELETED = true;
-
     private Integer id;
 
     private String name;

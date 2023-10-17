@@ -9,10 +9,6 @@ import java.util.Date;
 @Table("groupon")
 public class Groupon {
 
-    public static final Boolean NOT_DELETED = false;
-
-    public static final Boolean IS_DELETED = true;
-
     private Integer id;
 
     private Integer orderId;
